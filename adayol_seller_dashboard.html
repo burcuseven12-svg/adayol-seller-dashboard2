@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adayol - Satıcı Paneli (Lefkoşa Butik)</title>
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Configuration & Overrides -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#FAF8F4',
+              text: '#1A1A1A',
+              orange: '#E66A3C',
+              orangeSoft: '#FAF1ED',
+              orangeHover: '#D55527',
+              green: '#10B981',
+              greenSoft: '#ECFDF5',
+              grayCard: '#F5F5F5',
+              borderLight: '#EBE6DC',
+              accentGold: '#D99B26'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #FAF8F4;
+      color: #1A1A1A;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    
+    .transition-premium {
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF8F4;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #E66A3C33;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #E66A3C66;
+    }
+
+    #toast {
+      transform: translateY(120%);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    }
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toggle-checkbox:checked {
+      right: 0;
+      border-color: #10B981;
+    }
+    .toggle-checkbox:checked + .toggle-label {
+      background-color: #10B981;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row overflow-x-hidden selection:bg-brand-orangeSoft selection:text-brand-orange pb-20 md:pb-0">
+
+  <!-- 1. LEFT SIDEBAR (Fixed Desktop, Collapsible Mobile Drawer) -->
+  <aside id="sidebar" class="bg-white border-r border-brand-borderLight w-64 flex-shrink-0 hidden md:flex flex-col justify-between sticky top-0 h-screen z-40 transition-premium">
+    <div>
+      <!-- Sidebar Header / Brand Logo -->
+      <div class="p-6 border-b border-brand-borderLight flex items-center justify-between">
+        <a href="#" class="flex items-baseline gap-1">
+          <span class="text-2xl font-black text-brand-text tracking-tight font-sans">adayol<span class="text-brand-orange text-3xl">.</span></span>
+          <span class="text-[9px] font-bold tracking-widest text-brand-orange uppercase bg-brand-orangeSoft px-1.5 py-0.2 rounded ml-1">PANEL</span>
+        </a>
+        <button onclick="toggleMobileSidebar()" class="md:hidden p-1 hover:bg-brand-bg rounded-lg">
+          <i data-lucide="x" class="w-5 h-5 text-brand-text"></i>
+        </button>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="p-4 space-y-1">
+        <button id="nav-dashboard-view" onclick="switchView('dashboard-view', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-bold rounded-xl bg-brand-orangeSoft text-brand-orange border border-brand-orange/10 transition-all">
+          <i data-lucide="layout-dashboard" class="w-4.5 h-4.5"></i>
+          <span>Genel Bakış</span>
+        </button>
+        <button id="nav-orders-view" onclick="switchView('orders-view', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-gray-500 hover:bg-brand-bg hover:text-brand-orange transition-all">
+          <i data-lucide="shopping-bag" class="w-4.5 h-4.5"></i>
+          <span>Siparişler</span>
+          <span id="badge-orders-count" class="ml-auto bg-brand-orange text-white text-[10px] font-bold px-2 py-0.5 rounded-full">3 Yeni</span>
+        </button>
+        <button id="nav-products-view" onclick="switchView('products-view', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-gray-500 hover:bg-brand-bg hover:text-brand-orange transition-all">
+          <i data-lucide="package" class="w-4.5 h-4.5"></i>
+          <span>Ürünlerim</span>
+        </button>
+        <button id="nav-add-product-view" onclick="switchView('add-product-view', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-gray-500 hover:bg-brand-bg hover:text-brand-orange transition-all">
+          <i data-lucide="plus-circle" class="w-4.5 h-4.5"></i>
+          <span>Yeni Ürün Ekle</span>
+        </button>
+        <button id="nav-stock-view" onclick="switchView('stock-view', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-gray-500 hover:bg-brand-bg hover:text-brand-orange transition-all">
+          <i data-lucide="sliders" class="w-4.5 h-4.5"></i>
+          <span>Stok & Fiyat</span>
+          <span id="badge-stock-warnings" class="ml-auto bg-amber-100 text-brand-accentGold text-[10px] font-bold px-2 py-0.5 rounded-full">1 Uyarı</span>
+        </button>
+        <button id="nav-messages-view" onclick="switchView('messages-view', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-gray-500 hover:bg-brand-bg hover:text-brand-orange transition-all">
+          <i data-lucide="message-square" class="w-4.5 h-4.5"></i>
+          <span>Müşteri Mesajları</span>
+          <span id="badge-unread-msgs" class="ml-auto bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>
+        </button>
+        <button id="nav-campaigns-view" onclick="switchView('campaigns-view', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-gray-500 hover:bg-brand-bg hover:text-brand-orange transition-all">
+          <i data-lucide="percent" class="w-4.5 h-4.5"></i>
+          <span>Kampanyalar</span>
+        </button>
+        <button id="nav-shipping-view" onclick="switchView('shipping-view', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-gray-500 hover:bg-brand-bg hover:text-brand-orange transition-all">
+          <i data-lucide="truck" class="w-4.5 h-4.5"></i>
+          <span>Teslimat Ayarları</span>
+        </button>
+        <button id="nav-payments-view" onclick="switchView('payments-view', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-gray-500 hover:bg-brand-bg hover:text-brand-orange transition-all">
+          <i data-lucide="credit-card" class="w-4.5 h-4.5"></i>
+          <span>Hakediş & Ödemeler</span>
+        </button>
+        <button id="nav-profile-view" onclick="switchView('profile-view', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl text-gray-500 hover:bg-brand-bg hover:text-brand-orange transition-all">
+          <i data-lucide="store" class="w-4.5 h-4.5"></i>
+          <span>Mağaza Profili</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Sidebar Footer (Logged-in store badge) -->
+    <div class="p-4 border-t border-brand-borderLight bg-brand-bg m-4 rounded-2xl flex items-center gap-3">
+      <div id="side-profile-avatar" class="w-10 h-10 rounded-xl bg-brand-orange flex items-center justify-center text-white font-serif font-bold text-lg shadow-sm">
+        LB
+      </div>
+      <div class="overflow-hidden">
+        <h4 id="side-profile-name" class="text-xs font-bold text-brand-text truncate">Lefkoşa Butik</h4>
+        <p class="text-[10px] text-gray-400 truncate">Dereboyu, Lefkoşa</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 2. MAIN HEADER & BODY CONTAINER -->
+  <div class="flex-grow flex flex-col min-w-0 min-h-screen">
+    
+    <!-- TOP HEADER -->
+    <header class="bg-white border-b border-brand-borderLight px-6 py-4 sticky top-0 z-30 shadow-sm flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <!-- Sidebar Toggle (Mobile only) -->
+        <button onclick="toggleMobileSidebar()" class="md:hidden p-2 hover:bg-brand-bg rounded-xl" aria-label="Menü">
+          <i data-lucide="menu" class="w-6 h-6 text-brand-text"></i>
+        </button>
+        
+        <div>
+          <h2 class="text-base md:text-lg font-extrabold text-brand-text flex items-center gap-2">
+            <span id="top-header-store-name">Lefkoşa Butik</span>
+            <span class="bg-brand-greenSoft text-brand-green text-[10px] font-bold px-2 py-0.5 rounded-full border border-brand-green/10 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse"></span>
+              Aktif Mağaza
+            </span>
+          </h2>
+          <p class="text-[11px] text-gray-400 hidden sm:block">Adayol Yerel Pazaryeri Satıcı Portalı</p>
+        </div>
+      </div>
+
+      <!-- Quick Action Bar -->
+      <div class="flex items-center gap-2 md:gap-3.5">
+        <a href="index.html" target="_blank" class="hidden sm:flex items-center gap-1.5 bg-brand-bg hover:bg-brand-orangeSoft border border-brand-borderLight hover:border-brand-orange/20 text-brand-text hover:text-brand-orange text-xs font-bold px-3 py-2 rounded-xl transition-all">
+          <i data-lucide="external-link" class="w-4 h-4"></i>
+          <span>Mağaza Önizleme</span>
+        </a>
+        
+        <button onclick="triggerToast('Destek talebi oluşturuldu. Temsilcimiz 10 dakika içinde bağlanacaktır.')" class="p-2 bg-brand-bg hover:bg-brand-orangeSoft rounded-full border border-brand-borderLight text-gray-500 hover:text-brand-orange transition-all relative" title="Yardım">
+          <i data-lucide="help-circle" class="w-5 h-5"></i>
+        </button>
+
+        <button onclick="triggerToast('Henüz okunmamış yeni bir sistem bildirimi bulunmamaktadır.')" class="p-2 bg-brand-bg hover:bg-brand-orangeSoft rounded-full border border-brand-borderLight text-gray-500 hover:text-brand-orange transition-all relative" title="Bildirimler">
+          <i data-lucide="bell" class="w-5 h-5"></i>
+          <span class="absolute top-0.5 right-0.5 bg-brand-orange w-2 h-2 rounded-full ring-2 ring-white"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN INTERACTIVE WORKSPACE -->
+    <main class="flex-grow p-4 md:p-8 space-y-8 pb-24 md:pb-8">
+
+      <!-- =========================================================================
+           VIEW 1: GENERAL OVERVIEW (DASHBOARD)
+           ========================================================================= -->
+      <section id="dashboard-view" class="workspace-panel block space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-borderLight pb-4">
+          <div>
+            <h3 class="text-xl font-extrabold text-brand-text">Genel Bakış</h3>
+            <p class="text-xs text-gray-400 mt-0.5">Dükkanınızın bugünkü operasyonel durumu ve performansı.</p>
+          </div>
+          <div class="text-xs text-gray-500 font-semibold bg-white px-3 py-1.5 rounded-xl border border-brand-borderLight">
+            Son Senkronizasyon: <span class="text-brand-orange font-bold">Az önce</span>
+          </div>
+        </div>
+
+        <!-- Metric Widgets Grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white border border-brand-borderLight p-5 rounded-2xl shadow-sm relative overflow-hidden">
+            <span class="text-xs text-gray-400 font-bold uppercase tracking-wider block">Günlük Ciro</span>
+            <div class="flex items-baseline gap-1 mt-2">
+              <span id="dash-widget-revenue" class="text-2xl md:text-3xl font-black text-brand-text tracking-tight">4,810.00</span>
+              <span class="text-xs font-extrabold text-brand-orange">TL</span>
+            </div>
+            <p class="text-[10px] text-brand-green mt-1 font-bold flex items-center gap-1">
+              <span>↑ %14.2</span> <span class="text-gray-400 font-medium">dünden beri</span>
+            </p>
+          </div>
+
+          <button onclick="switchView('orders-view', document.getElementById('nav-orders-view'))" class="bg-white border border-brand-borderLight p-5 rounded-2xl shadow-sm relative overflow-hidden text-left hover:border-brand-orange transition-premium">
+            <span class="text-xs text-gray-400 font-bold uppercase tracking-wider block">Yeni Siparişler</span>
+            <div class="flex items-baseline gap-1.5 mt-2">
+              <span id="dash-widget-new-orders" class="text-2xl md:text-3xl font-black text-brand-text tracking-tight">3</span>
+              <span class="text-xs font-bold text-brand-green">Onay bekliyor</span>
+            </div>
+            <p class="text-[10px] text-gray-500 mt-1">Lütfen jet teslimat için onaylayın</p>
+          </button>
+
+          <button onclick="switchView('stock-view', document.getElementById('nav-stock-view'))" class="bg-white border border-brand-borderLight p-5 rounded-2xl shadow-sm relative overflow-hidden text-left hover:border-brand-orange transition-premium">
+            <span class="text-xs text-gray-400 font-bold uppercase tracking-wider block">Stok Uyarısı</span>
+            <div class="flex items-baseline gap-1.5 mt-2">
+              <span id="dash-widget-stock-alerts" class="text-2xl md:text-3xl font-black text-brand-orange tracking-tight">1</span>
+              <span class="text-xs font-bold text-brand-orange">Kritik</span>
+            </div>
+            <p class="text-[10px] text-brand-orange font-semibold mt-1">Varyantları güncelleyin</p>
+          </button>
+
+          <div class="bg-white border border-brand-borderLight p-5 rounded-2xl shadow-sm relative overflow-hidden">
+            <span class="text-xs text-gray-400 font-bold uppercase tracking-wider block">Adayol Onay Durumu</span>
+            <div class="flex items-baseline gap-1.5 mt-2">
+              <span class="text-xl md:text-2xl font-black text-brand-green tracking-tight">Aktif</span>
+              <span class="text-xs text-gray-400">Moderasyon Tamam</span>
+            </div>
+            <p class="text-[10px] text-gray-500 mt-1">Tüm dükkan vitrinlere açık</p>
+          </div>
+        </div>
+
+        <!-- Main Dashboard Content Split Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <!-- Recent Activity Feed (Left) -->
+          <div class="lg:col-span-7 bg-white border border-brand-borderLight rounded-2xl p-6 shadow-sm space-y-4">
+            <h4 class="font-bold text-brand-text text-sm flex items-center gap-1.5 pb-2 border-b border-brand-bg">
+              <i data-lucide="activity" class="w-4.5 h-4.5 text-brand-orange"></i> Canlı Aktivite Akışı
+            </h4>
+            <div id="dashboard-activity-feed" class="space-y-4 max-h-[350px] overflow-y-auto pr-2">
+              <!-- Dynamically populated activities -->
+            </div>
+          </div>
+
+          <!-- Pending Alerts & ToDo List (Right) -->
+          <div class="lg:col-span-5 bg-white border border-brand-borderLight rounded-2xl p-6 shadow-sm space-y-4">
+            <h4 class="font-bold text-brand-text text-sm flex items-center gap-1.5 pb-2 border-b border-brand-bg">
+              <i data-lucide="check-square" class="w-4.5 h-4.5 text-brand-orange"></i> Günlük Görevleriniz
+            </h4>
+            <div class="space-y-2 text-xs">
+              <div class="flex items-start gap-3 p-3 bg-brand-bg rounded-xl border border-brand-borderLight">
+                <span class="p-1 bg-brand-orange text-white rounded-lg mt-0.5"><i data-lucide="truck" class="w-3.5 h-3.5"></i></span>
+                <div>
+                  <strong class="text-brand-text block">1 Siparişi Kuryeye Teslim Edin</strong>
+                  <span class="text-gray-400">Ada Express siparişi teslimat zamanı daralıyor.</span>
+                </div>
+              </div>
+              <div class="flex items-start gap-3 p-3 bg-brand-bg rounded-xl border border-brand-borderLight">
+                <span class="p-1 bg-blue-500 text-white rounded-lg mt-0.5"><i data-lucide="message-square" class="w-3.5 h-3.5"></i></span>
+                <div>
+                  <strong class="text-brand-text block">Bekleyen Müşteri Sorusu</strong>
+                  <span class="text-gray-400">Keten kumaş kalıbı hakkında bir soru geldi.</span>
+                </div>
+              </div>
+              <div class="flex items-start gap-3 p-3 bg-brand-bg rounded-xl border border-brand-borderLight">
+                <span class="p-1 bg-amber-500 text-white rounded-lg mt-0.5"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i></span>
+                <div>
+                  <strong class="text-brand-text block">Kritik Stok Uyarısı</strong>
+                  <span class="text-gray-400">Yüksek Bel Keten Şort varyant stoğu tükendi.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 2: ORDERS MANAGEMENT
+           ========================================================================= -->
+      <section id="orders-view" class="workspace-panel hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-borderLight pb-4">
+          <div>
+            <h3 class="text-xl font-extrabold text-brand-text">Sipariş Yönetimi</h3>
+            <p class="text-xs text-gray-400 mt-0.5">Gelen siparişlerin durumunu güncelleyin ve lojistik koordinasyonunu yönetin.</p>
+          </div>
+        </div>
+
+        <!-- Filter Subtabs -->
+        <div class="flex flex-wrap items-center gap-1.5 border-b border-brand-borderLight pb-1.5 overflow-x-auto">
+          <button onclick="filterOrdersTab('Yeni', this)" class="order-tab-btn pb-2 border-b-2 border-brand-orange text-brand-orange font-extrabold text-xs px-4">Yeni Siparişler</button>
+          <button onclick="filterOrdersTab('Hazırlanıyor', this)" class="order-tab-btn pb-2 border-b-2 border-transparent text-gray-400 hover:text-brand-orange font-bold text-xs px-4">Hazırlanıyor</button>
+          <button onclick="filterOrdersTab('Kuryeye Verildi', this)" class="order-tab-btn pb-2 border-b-2 border-transparent text-gray-400 hover:text-brand-orange font-bold text-xs px-4">Kuryeye Verildi</button>
+          <button onclick="filterOrdersTab('Teslim Edildi', this)" class="order-tab-btn pb-2 border-b-2 border-transparent text-gray-400 hover:text-brand-orange font-bold text-xs px-4">Teslim Edildi</button>
+          <button onclick="filterOrdersTab('İadeler', this)" class="order-tab-btn pb-2 border-b-2 border-transparent text-gray-400 hover:text-brand-orange font-bold text-xs px-4">İadeler & İptaller</button>
+        </div>
+
+        <!-- Active Orders Grid -->
+        <div id="orders-grid-container" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Dynamically populated order cards -->
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 3: PRODUCTS MANAGEMENT
+           ========================================================================= -->
+      <section id="products-view" class="workspace-panel hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-borderLight pb-4">
+          <div>
+            <h3 class="text-xl font-extrabold text-brand-text">Mağaza Ürün Envanteri</h3>
+            <p class="text-xs text-gray-400 mt-0.5">Lefkoşa Butik dükkanında yayında olan veya onay bekleyen tüm ürünler.</p>
+          </div>
+          <button onclick="switchView('add-product-view', document.getElementById('nav-add-product-view'))" class="bg-brand-orange hover:bg-brand-orangeHover text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="plus" class="w-4 h-4"></i> Yeni Ürün Ekle
+          </button>
+        </div>
+
+        <!-- Search and Filters bar -->
+        <div class="bg-white border border-brand-borderLight rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
+          <div class="relative flex-1 max-w-sm">
+            <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3"></i>
+            <input id="product-search" oninput="filterProductCatalog()" type="text" placeholder="Ürün adı veya SKU ile ara..." class="w-full bg-brand-bg border border-brand-borderLight rounded-xl pl-9 pr-4 py-2.5 text-xs focus:outline-none focus:border-brand-orange">
+          </div>
+          <div class="flex items-center gap-2">
+            <select id="product-filter-category" onchange="filterProductCatalog()" class="bg-brand-bg border border-brand-borderLight rounded-xl text-xs font-bold text-brand-text p-2.5 focus:outline-none">
+              <option value="Tümü">Tüm Kategoriler</option>
+              <option value="Kadın Giyim">Kadın Giyim</option>
+              <option value="Erkek Giyim">Erkek Giyim</option>
+              <option value="Kıbrıs Gurme">Kıbrıs Gurme</option>
+              <option value="Ev & Yaşam">Ev & Yaşam</option>
+            </select>
+            <select id="product-filter-status" onchange="filterProductCatalog()" class="bg-brand-bg border border-brand-borderLight rounded-xl text-xs font-bold text-brand-text p-2.5 focus:outline-none">
+              <option value="Tümü">Tüm Durumlar</option>
+              <option value="Yayında">Yayındakiler</option>
+              <option value="Onay Bekliyor">Onay Bekleyenler</option>
+              <option value="Stokta Yok">Stokta Olmayanlar</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Database Table -->
+        <div class="overflow-x-auto border border-brand-borderLight rounded-2xl bg-white shadow-sm">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-brand-grayCard border-b border-brand-borderLight text-gray-500">
+                <th class="p-4 font-semibold">Görsel</th>
+                <th class="p-4 font-semibold">Ürün Adı</th>
+                <th class="p-4 font-semibold">Stok</th>
+                <th class="p-4 font-semibold">Fiyat</th>
+                <th class="p-4 font-semibold">Durum</th>
+                <th class="p-4 font-semibold">Son Güncelleme</th>
+                <th class="p-4 font-semibold text-right">İşlemler</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-rows" class="divide-y divide-brand-borderLight">
+              <!-- Dynamically populated from global state -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 4: ADD NEW PRODUCT WIZARD
+           ========================================================================= -->
+      <section id="add-product-view" class="workspace-panel hidden space-y-6">
+        <div class="border-b border-brand-borderLight pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 class="text-xl font-extrabold text-brand-text flex items-center gap-2">
+              <i data-lucide="plus-circle" class="w-6 h-6 text-brand-orange"></i>
+              Yeni Ürün Ekleme Sihirbazı
+            </h3>
+            <p class="text-xs text-gray-400 mt-0.5">Ürününüzü hızlı adımlarla Kıbrıs genelinde vitrine çıkartın.</p>
+          </div>
+          <div class="bg-white border border-brand-borderLight px-4 py-2 rounded-xl text-xs font-bold text-brand-text flex items-center gap-1.5 self-start">
+            <span class="text-brand-orange">Adım <strong id="step-count-indicator">1</strong></span>
+            <span class="text-gray-300">/</span>
+            <span class="text-gray-400">8</span>
+          </div>
+        </div>
+
+        <!-- Progress Indicator Bar -->
+        <div class="bg-white border border-brand-borderLight p-4 rounded-2xl shadow-xs">
+          <div class="relative w-full h-1.5 bg-brand-grayCard rounded-full overflow-hidden">
+            <div id="wizard-progress-bar" class="absolute top-0 bottom-0 left-0 bg-brand-orange w-[12.5%] transition-premium rounded-full"></div>
+          </div>
+          <div class="hidden md:grid grid-cols-8 gap-1.5 text-[10px] font-bold uppercase mt-3.5 tracking-wider text-center">
+            <span id="step-label-1" class="text-brand-orange font-black">1. Bilgiler</span>
+            <span id="step-label-2" class="text-gray-400">2. Kategori</span>
+            <span id="step-label-3" class="text-gray-400">3. Görseller</span>
+            <span id="step-label-4" class="text-gray-400">4. Varyantlar</span>
+            <span id="step-label-5" class="text-gray-400">5. Fiyat & Stok</span>
+            <span id="step-label-6" class="text-gray-400">6. Teslimat</span>
+            <span id="step-label-7" class="text-gray-400">7. Vitrin</span>
+            <span id="step-label-8" class="text-gray-400">8. Onay</span>
+          </div>
+        </div>
+
+        <!-- Wizard Layout Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Wizard Form Fields (Left) -->
+          <div class="lg:col-span-8 bg-white border border-brand-borderLight rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+            
+            <!-- STEP 1 -->
+            <div id="wizard-step-1" class="wizard-step-form block space-y-5">
+              <h4 class="text-base font-extrabold text-brand-text border-b border-brand-bg pb-2.5">Adım 1: Ürün Kimlik Bilgileri</h4>
+              <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider" for="p-name">Ürün Adı *</label>
+                <input type="text" id="p-name" onkeyup="syncLivePreview()" placeholder="Örn: Kadın Keten Gömlek - Beyaz / Oversize Kesim" class="w-full border border-brand-borderLight bg-brand-bg rounded-xl p-3 text-sm focus:outline-none focus:border-brand-orange font-semibold">
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                  <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider" for="p-brand">Marka / Koleksiyon *</label>
+                  <input type="text" id="p-brand" onkeyup="syncLivePreview()" placeholder="Örn: Dereboyu Keten Serisi" class="w-full border border-brand-borderLight bg-brand-bg rounded-xl p-3 text-sm focus:outline-none focus:border-brand-orange">
+                </div>
+                <div class="space-y-1.5">
+                  <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider" for="p-sku">Ürün Kodu / SKU *</label>
+                  <input type="text" id="p-sku" value="ADY-KTN-LB72" class="w-full border border-brand-borderLight bg-brand-bg rounded-xl p-3 text-sm focus:outline-none focus:border-brand-orange font-mono">
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider" for="p-desc">Kısa Açıklama *</label>
+                <textarea id="p-desc" rows="3" placeholder="Ürünün kumaş yapısı, boyu, kalıbı hakkında kısa bilgiler..." class="w-full border border-brand-borderLight bg-brand-bg rounded-xl p-3 text-sm focus:outline-none focus:border-brand-orange"></textarea>
+              </div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div id="wizard-step-2" class="wizard-step-form hidden space-y-5">
+              <h4 class="text-base font-extrabold text-brand-text border-b border-brand-bg pb-2.5">Adım 2: Doğru Kategori Konumlandırması</h4>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <button onclick="selectCategory(this, 'Kadın Giyim')" class="cat-card-btn border-2 border-brand-orange bg-brand-orangeSoft p-4 rounded-2xl flex flex-col items-center justify-center text-center gap-2 transition-all">
+                  <span class="p-2 bg-white rounded-xl text-brand-orange"><i data-lucide="shirt" class="w-5 h-5"></i></span>
+                  <span class="text-xs font-bold">Kadın Giyim</span>
+                </button>
+                <button onclick="selectCategory(this, 'Erkek Giyim')" class="cat-card-btn border-2 border-brand-borderLight bg-brand-bg p-4 rounded-2xl flex flex-col items-center justify-center text-center gap-2 transition-all">
+                  <span class="p-2 bg-white rounded-xl text-gray-500"><i data-lucide="user" class="w-5 h-5"></i></span>
+                  <span class="text-xs font-bold text-brand-text">Erkek Giyim</span>
+                </button>
+                <button onclick="selectCategory(this, 'Kıbrıs Gurme')" class="cat-card-btn border-2 border-brand-borderLight bg-brand-bg p-4 rounded-2xl flex flex-col items-center justify-center text-center gap-2 transition-all">
+                  <span class="p-2 bg-white rounded-xl text-gray-500"><i data-lucide="carrot" class="w-5 h-5"></i></span>
+                  <span class="text-xs font-bold text-brand-text">Kıbrıs Gurme</span>
+                </button>
+                <button onclick="selectCategory(this, 'Ev & Yaşam')" class="cat-card-btn border-2 border-brand-borderLight bg-brand-bg p-4 rounded-2xl flex flex-col items-center justify-center text-center gap-2 transition-all">
+                  <span class="p-2 bg-white rounded-xl text-gray-500"><i data-lucide="home" class="w-5 h-5"></i></span>
+                  <span class="text-xs font-bold text-brand-text">Ev & Yaşam</span>
+                </button>
+              </div>
+              <input type="hidden" id="p-selected-cat" value="Kadın Giyim">
+            </div>
+
+            <!-- STEP 3 -->
+            <div id="wizard-step-3" class="wizard-step-form hidden space-y-5">
+              <h4 class="text-base font-extrabold text-brand-text border-b border-brand-bg pb-2.5">Adım 3: Ürün Fotoğrafları</h4>
+              <div class="border-2 border-dashed border-brand-borderLight hover:border-brand-orange/40 bg-brand-bg rounded-2xl p-6 text-center transition-all cursor-pointer">
+                <p class="text-xs font-bold text-brand-text">Hazır test görsellerimizden birine tıklayın:</p>
+                <div class="grid grid-cols-4 gap-3 mt-4">
+                  <button onclick="setPreviewImage('https://images.unsplash.com/photo-1603252109303-2751441dd157?w=600&auto=format&fit=crop&q=80')" class="border border-brand-borderLight rounded-xl overflow-hidden aspect-[4/5] focus:ring-2 focus:ring-brand-orange">
+                    <img src="https://images.unsplash.com/photo-1603252109303-2751441dd157?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                  </button>
+                  <button onclick="setPreviewImage('https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&auto=format&fit=crop&q=80')" class="border border-brand-borderLight rounded-xl overflow-hidden aspect-[4/5] focus:ring-2 focus:ring-brand-orange">
+                    <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                  </button>
+                  <button onclick="setPreviewImage('https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=600&auto=format&fit=crop&q=80')" class="border border-brand-borderLight rounded-xl overflow-hidden aspect-[4/5] focus:ring-2 focus:ring-brand-orange">
+                    <img src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                  </button>
+                  <button onclick="setPreviewImage('https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?w=600&auto=format&fit=crop&q=80')" class="border border-brand-borderLight rounded-xl overflow-hidden aspect-[4/5] focus:ring-2 focus:ring-brand-orange">
+                    <img src="https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 4 -->
+            <div id="wizard-step-4" class="wizard-step-form hidden space-y-5">
+              <h4 class="text-base font-extrabold text-brand-text border-b border-brand-bg pb-2.5">Adım 4: Varyant ve Seçenek Yönetimi</h4>
+              <div class="bg-brand-bg border border-brand-borderLight rounded-2xl p-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div class="space-y-1.5">
+                  <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider" for="var-color">Renk</label>
+                  <select id="var-color" class="w-full text-xs border border-brand-borderLight bg-white rounded-xl p-2.5 focus:outline-none">
+                    <option value="Beyaz">Beyaz</option>
+                    <option value="Bej">Bej</option>
+                    <option value="Siyah">Siyah</option>
+                  </select>
+                </div>
+                <div class="space-y-1.5">
+                  <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider" for="var-size">Beden</label>
+                  <select id="var-size" class="w-full text-xs border border-brand-borderLight bg-white rounded-xl p-2.5 focus:outline-none">
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                  </select>
+                </div>
+                <button type="button" onclick="addNewVariant()" class="bg-brand-text hover:bg-brand-orange text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5">
+                  <i data-lucide="plus" class="w-4 h-4"></i> Varyant Ekle
+                </button>
+              </div>
+
+              <!-- Generated Variant Table -->
+              <div class="space-y-3">
+                <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Tanımlanmış Varyant Kombinasyonları</h5>
+                <div class="overflow-x-auto border border-brand-borderLight rounded-xl bg-white shadow-xs">
+                  <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr class="bg-brand-grayCard border-b border-brand-borderLight text-gray-500">
+                        <th class="p-3 font-semibold">Renk</th>
+                        <th class="p-3 font-semibold">Beden</th>
+                        <th class="p-3 font-semibold">Stok Adedi</th>
+                        <th class="p-3 font-semibold">Fiyat (TL)</th>
+                        <th class="p-3 font-semibold text-right">Durum</th>
+                      </tr>
+                    </thead>
+                    <tbody id="variant-table-rows" class="divide-y divide-brand-borderLight">
+                      <tr class="hover:bg-brand-bg transition-colors">
+                        <td class="p-3 font-bold text-brand-text">Beyaz</td>
+                        <td class="p-3 font-bold text-brand-orange">S</td>
+                        <td class="p-3">12</td>
+                        <td class="p-3 font-bold">520 TL</td>
+                        <td class="p-3 text-right">
+                          <span class="bg-brand-greenSoft text-brand-green text-[10px] font-bold px-2 py-0.5 rounded-full border border-brand-green/10">Aktif</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 5 -->
+            <div id="wizard-step-5" class="wizard-step-form hidden space-y-5">
+              <h4 class="text-base font-extrabold text-brand-text border-b border-brand-bg pb-2.5">Adım 5: Fiyatlandırma & Stok Bilgileri</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                  <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider" for="p-price">Satış Fiyatı (TL) *</label>
+                  <input type="number" id="p-price" value="520" onkeyup="syncLivePreview()" class="w-full border border-brand-borderLight bg-brand-bg rounded-xl p-3 text-sm focus:outline-none">
+                </div>
+                <div class="space-y-1.5">
+                  <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider" for="p-total-stock">Toplam Stok *</label>
+                  <input type="number" id="p-total-stock" value="25" class="w-full border border-brand-borderLight bg-brand-bg rounded-xl p-3 text-sm focus:outline-none">
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 6 -->
+            <div id="wizard-step-6" class="wizard-step-form hidden space-y-5">
+              <h4 class="text-base font-extrabold text-brand-text border-b border-brand-bg pb-2.5">Adım 6: Lojistik & Kurye Seçenekleri</h4>
+              <div class="space-y-3">
+                <label class="flex items-center gap-2 cursor-pointer p-3 bg-brand-bg border border-brand-borderLight rounded-xl">
+                  <input type="checkbox" checked class="rounded text-brand-orange border-brand-borderLight">
+                  <span>🏪 Mağazadan Gönderim (Butik Rafı)</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer p-3 bg-brand-greenSoft border border-brand-green/20 rounded-xl">
+                  <input type="checkbox" checked id="delivery-express-check" onchange="syncLivePreview()" class="rounded border-brand-green text-brand-green">
+                  <span class="text-brand-green font-bold">⚡ Ada Express (Bugün Teslime Uygun)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- STEP 7 -->
+            <div id="wizard-step-7" class="wizard-step-form hidden space-y-5">
+              <h4 class="text-base font-extrabold text-brand-text border-b border-brand-bg pb-2.5">Adım 7: Vitrin Etiketleri</h4>
+              <p class="text-xs text-gray-400">Ürününüzün vitrinde parlaması için uygun etiketleri eşleştirin.</p>
+              <div class="grid grid-cols-2 gap-3 text-xs">
+                <label class="flex items-start gap-2 p-3 bg-brand-bg border border-brand-borderLight rounded-xl">
+                  <input type="checkbox" checked class="rounded mt-0.5">
+                  <div>
+                    <strong class="block">🇨🇾 Yerel Üretici</strong>
+                    <span class="text-[10px] text-gray-400">KKTC'de üretilmiştir.</span>
+                  </div>
+                </label>
+                <label class="flex items-start gap-2 p-3 bg-brand-bg border border-brand-borderLight rounded-xl">
+                  <input type="checkbox" checked class="rounded mt-0.5">
+                  <div>
+                    <strong class="block">⚡ Ada Express</strong>
+                    <span class="text-[10px] text-gray-400">Hızlı kuryeye uygun.</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- STEP 8 -->
+            <div id="wizard-step-8" class="wizard-step-form hidden space-y-5">
+              <h4 class="text-base font-extrabold text-brand-text border-b border-brand-bg pb-2.5">Adım 8: Son Kontrol ve Yayına Gönderme</h4>
+              <div class="bg-brand-greenSoft border border-brand-green/20 p-4 rounded-2xl flex items-start gap-3 text-xs text-brand-text">
+                <i data-lucide="check-circle" class="w-5 h-5 text-brand-green mt-0.5"></i>
+                <div>
+                  <h5 class="font-bold">Her Şey Hazır!</h5>
+                  <p class="text-gray-500 mt-1">Ürününüz Adayol kontrol ekibine gönderilecektir. Kontrolden hemen sonra yayına alınacaktır.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- BUTTON ACTIONS FOOTER -->
+            <div class="border-t border-brand-borderLight pt-6 flex items-center justify-between gap-4">
+              <button id="btn-prev-step" onclick="navigateWizard(-1)" class="px-5 py-3 bg-brand-bg hover:bg-brand-orangeSoft text-brand-text hover:text-brand-orange border border-brand-borderLight font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 opacity-50 cursor-not-allowed" disabled>
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Geri Dön
+              </button>
+              
+              <button id="btn-next-step" onclick="navigateWizard(1)" class="px-6 py-3 bg-brand-orange hover:bg-brand-orangeHover text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md">
+                İleri <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Live Product Preview Mockup (Right) -->
+          <div class="lg:col-span-4 sticky top-28 bg-[#FAF8F4] rounded-2xl border border-brand-borderLight p-4 space-y-4 shadow-sm hidden lg:block">
+            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1">
+              <i data-lucide="eye" class="w-4 h-4 text-brand-orange"></i> Alıcı Kartı Canlı Önizleme
+            </h4>
+
+            <div class="bg-white border border-brand-borderLight rounded-2xl p-3 shadow-md relative max-w-sm mx-auto">
+              <div id="preview-express-badge" class="absolute top-5 left-5 z-10">
+                <span class="bg-brand-green text-white text-[9px] font-bold px-2 py-1 rounded-md flex items-center gap-0.5 shadow">
+                  <i data-lucide="zap" class="w-3 h-3 fill-white text-brand-green"></i> Bugün Teslim
+                </span>
+              </div>
+              <div class="w-full aspect-[4/5] bg-brand-grayCard rounded-xl overflow-hidden mb-3">
+                <img id="preview-mock-img" src="https://images.unsplash.com/photo-1603252109303-2751441dd157?w=600&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+              </div>
+              <p id="preview-mock-brand" class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Dereboyu Keten Serisi</p>
+              <h3 id="preview-mock-title" class="text-xs font-bold text-brand-text mt-0.5 truncate">Oversize Kesim Gömlek</h3>
+              <div class="flex items-end justify-between mt-3 pt-2 border-t border-brand-borderLight/40">
+                <div>
+                  <p id="preview-mock-price" class="text-sm font-extrabold text-brand-text">520 TL</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 5: STOCK & PRICING QUICK UPDATE
+           ========================================================================= -->
+      <section id="stock-view" class="workspace-panel hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-borderLight pb-4">
+          <div>
+            <h3 class="text-xl font-extrabold text-brand-text">Hızlı Stok & Fiyat Yönetimi</h3>
+            <p class="text-xs text-gray-400 mt-0.5">Varyant detaylarınızı toplu düzenleyin ve anlık fiyat revizyonları yapın.</p>
+          </div>
+          <button onclick="saveAllStocksAndPrices()" class="bg-brand-green hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-sm transition-colors">
+            <i data-lucide="save" class="w-4 h-4"></i> Değişiklikleri Kaydet
+          </button>
+        </div>
+
+        <div class="overflow-x-auto border border-brand-borderLight rounded-2xl bg-white shadow-sm">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-brand-grayCard border-b border-brand-borderLight text-gray-500">
+                <th class="p-4 font-semibold">Görsel</th>
+                <th class="p-4 font-semibold">Ürün / Varyasyon</th>
+                <th class="p-4 font-semibold">SKU / Kod</th>
+                <th class="p-4 font-semibold">Stok Miktarı</th>
+                <th class="p-4 font-semibold">Birim Fiyat (TL)</th>
+                <th class="p-4 font-semibold text-right">Durum</th>
+              </tr>
+            </thead>
+            <tbody id="stock-table-rows" class="divide-y divide-brand-borderLight">
+              <!-- Inline-editable items dynamically populated from state -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 6: CUSTOMER MESSAGES
+           ========================================================================= -->
+      <section id="messages-view" class="workspace-panel hidden space-y-6">
+        <div class="border-b border-brand-borderLight pb-4">
+          <h3 class="text-xl font-extrabold text-brand-text">Müşteri Mesajları</h3>
+          <p class="text-xs text-gray-400 mt-0.5">Alıcı sorularını hızlıca cevaplayarak dönüşüm oranınızı artırın.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-white border border-brand-borderLight rounded-2xl h-[500px] overflow-hidden shadow-sm">
+          
+          <!-- Threads List (Left - 4 Cols) -->
+          <div class="lg:col-span-4 border-r border-brand-borderLight flex flex-col h-full">
+            <div class="p-4 border-b border-brand-bg bg-brand-grayCard">
+              <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Gelen Kutusu</span>
+            </div>
+            <div id="msg-threads-list" class="flex-grow overflow-y-auto divide-y divide-brand-bg">
+              <!-- Chat channels populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Conversation Window (Right - 8 Cols) -->
+          <div class="lg:col-span-8 flex flex-col h-full bg-brand-bg">
+            <div id="msg-chat-header" class="p-4 border-b border-brand-borderLight bg-white flex items-center justify-between">
+              <div>
+                <h4 id="active-chat-user" class="font-bold text-brand-text text-sm">Seçili sohbet bulunmuyor</h4>
+                <p id="active-chat-sku" class="text-[10px] text-gray-400"></p>
+              </div>
+            </div>
+
+            <!-- Messages Stream Area -->
+            <div id="msg-chat-stream" class="flex-grow overflow-y-auto p-4 space-y-3 flex flex-col justify-end">
+              <div class="text-center text-xs text-gray-400">Soldan bir müşteri seçerek yazışmaya başlayın.</div>
+            </div>
+
+            <!-- Quick Replies & Type Box -->
+            <div class="p-4 bg-white border-t border-brand-borderLight space-y-3">
+              <div class="flex flex-wrap gap-2">
+                <button onclick="insertQuickReply('Merhabalar! Ürünümüz tam kalıptır, kendi bedeninizi tercih edebilirsiniz.')" class="text-[10px] bg-brand-orangeSoft text-brand-orange px-2 py-1 rounded hover:bg-brand-orange hover:text-white font-bold transition-all">📏 Kalıp Tavsiyesi</button>
+                <button onclick="insertQuickReply('Bugün saat 16:00ya kadar verdiğiniz siparişi akşam kapınıza getireceğiz.')" class="text-[10px] bg-brand-orangeSoft text-brand-orange px-2 py-1 rounded hover:bg-brand-orange hover:text-white font-bold transition-all">🚚 Ada Express Detayı</button>
+              </div>
+              <div class="flex gap-2.5">
+                <input id="chat-input-text" type="text" placeholder="Cevabınızı yazın..." class="flex-1 border border-brand-borderLight bg-brand-bg rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-brand-orange">
+                <button onclick="sendChatMessage()" class="bg-brand-orange hover:bg-brand-orangeHover text-white px-4 rounded-xl text-xs font-bold transition-colors">Gönder</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 7: CAMPAIGNS & COUPONS
+           ========================================================================= -->
+      <section id="campaigns-view" class="workspace-panel hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-borderLight pb-4">
+          <div>
+            <h3 class="text-xl font-extrabold text-brand-text">Kampanya ve İndirim Yönetimi</h3>
+            <p class="text-xs text-gray-400 mt-0.5">Kupon kodları oluşturarak veya özel indirim kampanyalarına başvurarak satışları artırın.</p>
+          </div>
+          <button onclick="openNewCampaignModal()" class="bg-brand-orange hover:bg-brand-orangeHover text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center gap-1 shadow-sm transition-colors">
+            <i data-lucide="plus-circle" class="w-4.5 h-4.5"></i> Yeni Kupon Kodu Tanımla
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- Active Campaigns list dynamically rendered -->
+          <div class="bg-white border border-brand-borderLight rounded-2xl p-5 shadow-sm space-y-3 relative overflow-hidden bg-gradient-to-br from-white to-brand-orangeSoft/10">
+            <span class="bg-brand-greenSoft text-brand-green text-[10px] font-bold px-2 py-0.5 rounded-full border border-brand-green/10">Aktif</span>
+            <h4 class="font-serif text-lg font-bold text-brand-text">Yeni Sezon Ada Tanıtım</h4>
+            <p class="text-xs text-gray-500">Keten ürünlerinde sepette net %20 indirim tanımlar.</p>
+            <div class="flex items-center justify-between text-xs pt-2 border-t border-brand-bg">
+              <span class="text-gray-400">Kupon Kodu:</span>
+              <strong class="bg-white border px-2 py-0.5 rounded font-mono text-brand-orange">ADA20</strong>
+            </div>
+          </div>
+
+          <div class="bg-white border border-brand-borderLight rounded-2xl p-5 shadow-sm space-y-3 relative overflow-hidden">
+            <span class="bg-amber-100 text-brand-accentGold text-[10px] font-bold px-2 py-0.5 rounded-full">Onay Bekliyor</span>
+            <h4 class="font-serif text-lg font-bold text-brand-text">Dereboyu Butik Festivali</h4>
+            <p class="text-xs text-gray-500">Tüm ürün kataloğunuzda %15 net indirim kurgular.</p>
+            <div class="flex items-center justify-between text-xs pt-2 border-t border-brand-bg">
+              <span class="text-gray-400">Kupon Kodu:</span>
+              <strong class="bg-white border px-2 py-0.5 rounded font-mono">DEREBOYU15</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Campaign Modal Window -->
+        <div id="new-campaign-modal" class="hidden bg-brand-text/50 backdrop-blur-xs fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div class="bg-white rounded-2xl w-full max-w-md p-6 border border-brand-borderLight shadow-2xl relative space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-brand-text text-sm">Yeni Kupon Kodu Oluştur</h4>
+              <button onclick="closeNewCampaignModal()" class="text-gray-400 hover:text-brand-text"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-3 text-xs">
+              <div class="space-y-1">
+                <label class="block font-semibold">Kampanya Başlığı</label>
+                <input id="camp-title" type="text" placeholder="Örn: Yaz Sonu Büyük İndirimi" class="w-full border p-2.5 rounded-xl">
+              </div>
+              <div class="space-y-1">
+                <label class="block font-semibold">Kupon Kodu</label>
+                <input id="camp-code" type="text" placeholder="Örn: YAZSONU30" class="w-full border p-2.5 rounded-xl font-mono uppercase">
+              </div>
+              <div class="space-y-1">
+                <label class="block font-semibold">İndirim Oranı (%)</label>
+                <input id="camp-pct" type="number" value="10" class="w-full border p-2.5 rounded-xl">
+              </div>
+            </div>
+            <div class="flex justify-end gap-2 text-xs font-bold pt-2">
+              <button onclick="closeNewCampaignModal()" class="bg-brand-bg text-brand-text border px-4 py-2 rounded-xl">İptal</button>
+              <button onclick="submitNewCampaign()" class="bg-brand-orange text-white px-4 py-2 rounded-xl shadow-sm">Başvuruyu İlet</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 8: SHIPPING & LOGISTICS ZONE MANAGEMENT
+           ========================================================================= -->
+      <section id="shipping-view" class="workspace-panel hidden space-y-6">
+        <div class="border-b border-brand-borderLight pb-4">
+          <h3 class="text-xl font-extrabold text-brand-text">Teslimat & Lojistik Ayarları</h3>
+          <p class="text-xs text-gray-400 mt-0.5">Kuryenizin dağıtım sahalarını ve Ada Express jet sevkiyat parametrelerini yönetin.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          <!-- Active Areas Toggle Card -->
+          <div class="bg-white border border-brand-borderLight rounded-2xl p-6 shadow-sm space-y-4">
+            <h4 class="font-bold text-brand-text text-xs uppercase tracking-wider text-gray-400 flex items-center gap-1.5"><i data-lucide="map" class="w-4 h-4"></i> Sevkiyat Bölgeleri</h4>
+            <div class="space-y-3.5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <strong class="text-xs text-brand-text block">Lefkoşa (Merkez Dağıtım Sahası)</strong>
+                  <span class="text-[10px] text-gray-400">Merkez ve çevre mahallelere anlık teslimat</span>
+                </div>
+                <input type="checkbox" checked class="w-4 h-4 rounded text-brand-orange border-brand-borderLight">
+              </div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <strong class="text-xs text-brand-text block">Girne (Sahil Bölgesi)</strong>
+                  <span class="text-[10px] text-gray-400">Merkez ve Liman bölgelerine her gün teslimat</span>
+                </div>
+                <input type="checkbox" checked class="w-4 h-4 rounded text-brand-orange border-brand-borderLight">
+              </div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <strong class="text-xs text-brand-text block">Gazimağusa (Şehir içi)</strong>
+                  <span class="text-[10px] text-gray-400">Suriçi ve Maraş bölgelerine her gün kurye çıkışı</span>
+                </div>
+                <input type="checkbox" checked class="w-4 h-4 rounded text-brand-orange border-brand-borderLight">
+              </div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <strong class="text-xs text-brand-text block">Güzelyurt & Lefke</strong>
+                  <span class="text-[10px] text-gray-400">Haftada 3 gün kurye hattı kurulur</span>
+                </div>
+                <input type="checkbox" class="w-4 h-4 rounded text-brand-orange border-brand-borderLight">
+              </div>
+            </div>
+          </div>
+
+          <!-- CutOff Time Configurations -->
+          <div class="bg-white border border-brand-borderLight rounded-2xl p-6 shadow-sm space-y-4">
+            <h4 class="font-bold text-brand-text text-xs uppercase tracking-wider text-gray-400 flex items-center gap-1.5"><i data-lucide="clock" class="w-4 h-4"></i> Jet Sevkiyat Limit Saatleri</h4>
+            <div class="space-y-4 text-xs">
+              <div class="space-y-1.5">
+                <label class="block font-semibold">Ada Express Kabul Sipariş Saati (Cut-Off)</label>
+                <select class="w-full bg-brand-bg border p-2.5 rounded-xl focus:outline-none">
+                  <option value="1500">15:00'dan önceki siparişler aynı akşam kapıda</option>
+                  <option value="1600" selected>16:00'dan önceki siparişler aynı akşam kapıda</option>
+                  <option value="1700">17:00'dan önceki siparişler aynı akşam kapıda</option>
+                </select>
+              </div>
+              <div class="p-4 bg-brand-orangeSoft rounded-xl border border-brand-orange/10 flex items-start gap-2 text-[11px] text-brand-text">
+                <i data-lucide="info" class="w-4 h-4 text-brand-orange flex-shrink-0 mt-0.5"></i>
+                <p>Saat limitleri, müşterilerinizin dükkan vitrininde **Aynı Gün Teslimat** etiketini görebileceği süreyi anlık yönetir.</p>
+              </div>
+              <button onclick="triggerToast('Lojistik teslimat limitleri başarıyla güncellendi.')" class="w-full bg-brand-text hover:bg-brand-orange text-white py-2.5 rounded-xl font-bold transition-all">Ayarları Kaydet</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 9: PAYOUT & REVENUE LOGS
+           ========================================================================= -->
+      <section id="payments-view" class="workspace-panel hidden space-y-6">
+        <div class="border-b border-brand-borderLight pb-4">
+          <h3 class="text-xl font-extrabold text-brand-text">Hakediş & Finansal Raporlar</h3>
+          <p class="text-xs text-gray-400 mt-0.5">Dükkanınızın birikmiş bakiyelerini, haftalık ödemelerini ve komisyon dökümlerini inceleyin.</p>
+        </div>
+
+        <!-- Ledger metric dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="bg-[#ECFDF5] border border-brand-green/10 p-5 rounded-2xl relative overflow-hidden">
+            <span class="text-xs text-gray-400 font-bold uppercase tracking-wider block">Gelecek Hakediş Tutarı</span>
+            <div class="flex items-baseline gap-1 mt-2">
+              <span class="text-2xl font-black text-brand-text">14,240.00</span>
+              <span class="text-xs font-bold text-brand-green">TL</span>
+            </div>
+            <p class="text-[10px] text-gray-500 mt-1">Ödeme Günü: Gelecek Çarşamba</p>
+          </div>
+
+          <div class="bg-white border border-brand-borderLight p-5 rounded-2xl relative overflow-hidden">
+            <span class="text-xs text-gray-400 font-bold uppercase tracking-wider block">Kilitli Provizyon</span>
+            <div class="flex items-baseline gap-1 mt-2">
+              <span class="text-2xl font-black text-brand-text">1,820.00</span>
+              <span class="text-xs font-bold">TL</span>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-1">Sürecindeki siparişler</p>
+          </div>
+
+          <div class="bg-white border border-brand-borderLight p-5 rounded-2xl relative overflow-hidden flex flex-col justify-between">
+            <h4 class="text-xs font-bold uppercase text-gray-400">Komisyon Modeli</h4>
+            <p class="text-sm font-extrabold text-brand-text mt-2">%8 Adayol Standart Pazar Kesintisi</p>
+            <p class="text-[10px] text-gray-400">Kurye ücretleri alıcıdan tahsil edilir.</p>
+          </div>
+        </div>
+
+        <!-- Financial Payout history table -->
+        <div class="space-y-4">
+          <h4 class="font-bold text-brand-text text-sm flex items-center gap-1.5"><i data-lucide="history" class="w-4.5 h-4.5 text-brand-orange"></i> Ödeme Geçmişi</h4>
+          <div class="overflow-x-auto border border-brand-borderLight rounded-2xl bg-white shadow-sm">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-brand-grayCard border-b border-brand-borderLight text-gray-500">
+                  <th class="p-4 font-semibold">Ödeme Tarihi</th>
+                  <th class="p-4 font-semibold">İşlem / Rapor No</th>
+                  <th class="p-4 font-semibold">Brüt Hasılat</th>
+                  <th class="p-4 font-semibold">Kesilen Komisyon</th>
+                  <th class="p-4 font-semibold">Net Ödenen Tutar</th>
+                  <th class="p-4 font-semibold text-right">Durum</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-brand-borderLight">
+                <tr class="hover:bg-brand-bg transition-colors">
+                  <td class="p-4 font-bold text-brand-text">03.06.2026</td>
+                  <td class="p-4 font-mono text-gray-400">PAY-98231A-LB</td>
+                  <td class="p-4">12,800.00 TL</td>
+                  <td class="p-4">1,024.00 TL</td>
+                  <td class="p-4 font-bold text-brand-green">11,776.00 TL</td>
+                  <td class="p-4 text-right">
+                    <span class="bg-brand-greenSoft text-brand-green text-[10px] font-bold px-2 py-0.5 rounded-full border border-brand-green/10">Banka Hesabına Geçti</span>
+                  </td>
+                </tr>
+                <tr class="hover:bg-brand-bg transition-colors">
+                  <td class="p-4 font-bold text-brand-text">27.05.2026</td>
+                  <td class="p-4 font-mono text-gray-400">PAY-71120B-LB</td>
+                  <td class="p-4">9,400.00 TL</td>
+                  <td class="p-4">752.00 TL</td>
+                  <td class="p-4 font-bold text-brand-green">8,648.00 TL</td>
+                  <td class="p-4 text-right">
+                    <span class="bg-brand-greenSoft text-brand-green text-[10px] font-bold px-2 py-0.5 rounded-full border border-brand-green/10">Banka Hesabına Geçti</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           VIEW 10: STORE PROFILE SETTINGS
+           ========================================================================= -->
+      <section id="profile-view" class="workspace-panel hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-borderLight pb-4">
+          <div>
+            <h3 class="text-xl font-extrabold text-brand-text">Mağaza Profil Ayarları</h3>
+            <p class="text-xs text-gray-400 mt-0.5">Alıcıların dükkan vitrininizde gördüğü kimlik bilgilerini ve çalışma saatlerini düzenleyin.</p>
+          </div>
+          <button onclick="updateStoreProfileDetails()" class="bg-brand-orange hover:bg-brand-orangeHover text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1 shadow-sm transition-colors">
+            <i data-lucide="check-circle-2" class="w-4.5 h-4.5"></i> Profili Güncelle
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Profile Edit Fields (Left) -->
+          <div class="lg:col-span-8 bg-white border border-brand-borderLight rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div class="space-y-1.5">
+                <label class="block font-semibold">Dükkan İsmi *</label>
+                <input id="prof-store-name" type="text" value="Lefkoşa Butik" class="w-full border p-3 rounded-xl focus:outline-none focus:border-brand-orange">
+              </div>
+              <div class="space-y-1.5">
+                <label class="block font-semibold">Temsilci Sorumlusu *</label>
+                <input id="prof-store-owner" type="text" value="Cemre S." class="w-full border p-3 rounded-xl focus:outline-none focus:border-brand-orange">
+              </div>
+            </div>
+
+            <div class="space-y-1.5 text-xs">
+              <label class="block font-semibold">Mağaza Sloganı / Kısa Bio *</label>
+              <textarea id="prof-store-slogan" rows="3" class="w-full border p-3 rounded-xl focus:outline-none focus:border-brand-orange">Doğal keten, organik dokuma ve Akdeniz esintisini taşıyan modern yerel butik koleksiyonları.</textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div class="space-y-1.5">
+                <label class="block font-semibold">Fiziki Adres (KKTC) *</label>
+                <input id="prof-store-address" type="text" value="Dereboyu Caddesi, No: 42A, Lefkoşa" class="w-full border p-3 rounded-xl">
+              </div>
+              <div class="space-y-1.5">
+                <label class="block font-semibold">Telefon Numarası *</label>
+                <input id="prof-store-phone" type="text" value="+90 533 888 7766" class="w-full border p-3 rounded-xl font-mono">
+              </div>
+            </div>
+          </div>
+
+          <!-- Store Logo & Working hours preview (Right) -->
+          <div class="lg:col-span-4 space-y-6">
+            <div class="bg-white border border-brand-borderLight rounded-2xl p-6 shadow-sm text-center space-y-4">
+              <h4 class="text-xs font-bold uppercase text-gray-400 tracking-wider">Dükkan Logosu</h4>
+              <div class="w-20 h-20 bg-brand-orangeSoft rounded-2xl mx-auto flex items-center justify-center border-2 border-brand-orange/15 shadow-inner">
+                <span id="prof-avatar-preview" class="font-serif text-3xl font-bold text-brand-orange">LB</span>
+              </div>
+              <button onclick="triggerToast('Logo yükleme işlevi demoda simüle edilmiştir.')" class="bg-brand-bg hover:bg-brand-orangeSoft border border-brand-borderLight text-brand-text hover:text-brand-orange text-xs font-bold py-2 px-4 rounded-xl transition-all">Görsel Değiştir</button>
+            </div>
+
+            <div class="bg-white border border-brand-borderLight rounded-2xl p-6 shadow-sm space-y-3">
+              <h4 class="text-xs font-bold uppercase text-gray-400 tracking-wider">Çalışma Saatleri</h4>
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between">
+                  <span>Hafta İçi:</span>
+                  <strong class="text-brand-text">09:00 - 19:00</strong>
+                </div>
+                <div class="flex justify-between">
+                  <span>Cumartesi:</span>
+                  <strong class="text-brand-text">10:00 - 18:00</strong>
+                </div>
+                <div class="flex justify-between">
+                  <span>Pazar:</span>
+                  <strong class="text-brand-orange font-bold">Kapalı / Sadece Online</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- 3. MOBILE SYSTEM BOTTOM NAVIGATION BAR (Sticky Bottom) -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-brand-borderLight py-2 px-4 flex items-center justify-around z-50 shadow-lg">
+    <button onclick="switchView('dashboard-view', document.getElementById('nav-dashboard-view'))" class="flex flex-col items-center justify-center gap-1 text-[10px] font-bold text-gray-400 hover:text-brand-orange">
+      <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+      <span>Özet</span>
+    </button>
+    <button onclick="switchView('orders-view', document.getElementById('nav-orders-view'))" class="flex flex-col items-center justify-center gap-1 text-[10px] font-bold text-gray-400 hover:text-brand-orange">
+      <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+      <span>Sipariş</span>
+    </button>
+    <button onclick="switchView('add-product-view', document.getElementById('nav-add-product-view'))" class="flex flex-col items-center justify-center gap-1 text-[10px] font-bold text-gray-400 hover:text-brand-orange">
+      <i data-lucide="plus-circle" class="w-5 h-5"></i>
+      <span>Yeni Ekle</span>
+    </button>
+    <button onclick="switchView('products-view', document.getElementById('nav-products-view'))" class="flex flex-col items-center justify-center gap-1 text-[10px] font-bold text-gray-400 hover:text-brand-orange">
+      <i data-lucide="package" class="w-5 h-5"></i>
+      <span>Envanter</span>
+    </button>
+  </div>
+
+  <!-- 4. TOAST NOTIFICATION COMPONENT -->
+  <div id="toast" class="fixed bottom-16 md:bottom-8 right-6 z-50 bg-brand-text text-white p-4 rounded-2xl shadow-2xl flex items-center gap-3.5 max-w-sm pointer-events-none opacity-0 border border-white/10">
+    <div class="p-2 bg-brand-orange rounded-xl text-white">
+      <i data-lucide="bell" class="w-6 h-6 animate-pulse"></i>
+    </div>
+    <div class="flex-1">
+      <h4 class="font-bold text-sm text-brand-orange">Sistem Bildirimi</h4>
+      <p class="text-xs text-gray-300 mt-0.5" id="toast-message">Yapmış olduğunuz değişiklikler başarıyla kaydedildi.</p>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT SYSTEM LOGIC & OPERATIONAL STATE -->
+  <script>
+    // Global Memory State Store simulating Shopify & Trendyol back-end DB
+    const state = {
+      storeName: "Lefkoşa Butik",
+      storeOwner: "Cemre S.",
+      storeAddress: "Dereboyu Caddesi, No: 42A, Lefkoşa",
+      storePhone: "+90 533 888 7766",
+      storeSlogan: "Doğal keten, organik dokuma ve Akdeniz esintisini taşıyan modern yerel butik koleksiyonları.",
+
+      products: [
+        { id: 1, name: "Kadın Keten Gömlek - Beyaz", sku: "ADY-KTN-LB72", category: "Kadın Giyim", stock: 25, price: 520, status: "Yayında", img: "https://images.unsplash.com/photo-1603252109303-2751441dd157?w=120&auto=format&fit=crop&q=80", lastUpdate: "Bugün 14:30" },
+        { id: 2, name: "Askılı Doğal Keten Elbise", sku: "ADY-DRS-LB12", category: "Kadın Giyim", stock: 14, price: 760, status: "Onay Bekliyor", img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=120&auto=format&fit=crop&q=80", lastUpdate: "Dün 18:22" },
+        { id: 3, name: "Yüksek Bel Keten Şort - Bej", sku: "ADY-SHR-LB02", category: "Kadın Giyim", stock: 0, price: 360, status: "Stokta Yok", img: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=120&auto=format&fit=crop&q=80", lastUpdate: "3 gün önce" },
+        { id: 4, name: "Çizgili Keten Gömlek - Mavi", sku: "ADY-KTN-LB99", category: "Kadın Giyim", stock: 10, price: 580, status: "Yayında", img: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=120&auto=format&fit=crop&q=80", lastUpdate: "1 hafta önce" }
+      ],
+
+      orders: [
+        { id: "1001", customer: "Ayşe Kahraman", location: "Lefkoşa", date: "Bugün 15:10", product: "Kadın Keten Gömlek - Beyaz (S)", qty: 1, price: 520, delivery: "Ada Express", status: "Yeni" },
+        { id: "1002", customer: "Hasan Gazioğlu", location: "Girne", date: "Bugün 12:40", product: "Çizgili Keten Gömlek - Mavi (M)", qty: 2, price: 1160, delivery: "Kurye Sevkiyatı", status: "Yeni" },
+        { id: "1003", customer: "Ferdi Akdeniz", location: "Gazimağusa", date: "Dün 16:15", product: "Askılı Doğal Keten Elbise (L)", qty: 1, price: 760, delivery: "Kurye Sevkiyatı", status: "Hazırlanıyor" },
+        { id: "1004", customer: "Fatma Girneli", location: "Girne", date: "Dün 11:30", product: "Kadın Keten Gömlek - Beyaz (M)", qty: 1, price: 520, delivery: "Ada Express", status: "Kuryeye Verildi" },
+        { id: "1005", customer: "Merve Lefkoşalı", location: "Lefkoşa", date: "2 gün önce", product: "Yüksek Bel Keten Şort (S)", qty: 1, price: 360, delivery: "Mağazadan Gönderim", status: "Teslim Edildi" }
+      ],
+
+      chats: [
+        {
+          id: "chat-ayse",
+          user: "Ayşe Kahraman",
+          sku: "ADY-KTN-LB72",
+          unread: true,
+          messages: [
+            { sender: "customer", text: "Merhabalar, keten gömlek oversize kesim yazıyor. Kendi bedenimi mi almalıyım?", time: "15:02" }
+          ]
+        },
+        {
+          id: "chat-hasan",
+          user: "Hasan Gazioğlu",
+          sku: "ADY-KTN-LB99",
+          unread: true,
+          messages: [
+            { sender: "customer", text: "Selamlar, siparişim bugün kuryeye verilir mi acaba?", time: "12:35" }
+          ]
+        },
+        {
+          id: "chat-ferdi",
+          user: "Ferdi Akdeniz",
+          sku: "ADY-DRS-LB12",
+          unread: false,
+          messages: [
+            { sender: "customer", text: "Elbisenin boyu tam olarak kaç cm?", time: "Dün" },
+            { sender: "seller", text: "Merhabalar Ferdi Bey, omuzdan itibaren boyu 115 cm'dir.", time: "Dün" }
+          ]
+        }
+      ],
+
+      activities: [
+        { text: "Ayşe Kahraman yeni bir sipariş oluşturdu.", time: "10 dk önce", icon: "shopping-bag", color: "text-brand-orange" },
+        { text: "Yeni ürün 'Çizgili Keten Gömlek' başarıyla yayına alındı.", time: "2 saat önce", icon: "check-circle", color: "text-brand-green" },
+        { text: "Adayol Finans: Haftalık hakedişiniz banka hesabına gönderildi.", time: "Dün", icon: "credit-card", color: "text-blue-500" }
+      ],
+
+      wizard: {
+        currentStep: 1,
+        selectedCategory: "Kadın Giyim",
+        draftImg: "https://images.unsplash.com/photo-1603252109303-2751441dd157?w=600&auto=format&fit=crop&q=80",
+        variants: [
+          { color: "Beyaz", size: "S", stock: 12, price: 520, status: "Aktif" }
+        ]
+      }
+    };
+
+    // System Initializations
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      renderDashboardOverview();
+      renderOrdersCatalog();
+      renderProductsTable();
+      renderStockTable();
+      renderMessagingBox();
+    });
+
+    // Sidebar & Mobile dynamic page switcher logic
+    function switchView(targetViewId, element) {
+      // Manage CSS Classes of Sidebar Items
+      const items = document.querySelectorAll('.nav-item');
+      items.forEach(i => {
+        i.classList.remove('bg-brand-orangeSoft', 'text-brand-orange', 'border', 'border-brand-orange/10', 'font-bold');
+        i.classList.add('text-gray-500', 'font-semibold');
+      });
+
+      if (element) {
+        element.classList.remove('text-gray-500', 'font-semibold');
+        element.classList.add('bg-brand-orangeSoft', 'text-brand-orange', 'border', 'border-brand-orange/10', 'font-bold');
+      }
+
+      // Hide all Modular Workspace panels
+      const panels = document.querySelectorAll('.workspace-panel');
+      panels.forEach(p => p.classList.add('hidden'));
+
+      // Open target workspace
+      const target = document.getElementById(targetViewId);
+      if (target) {
+        target.classList.remove('hidden');
+      }
+
+      // Refresh dynamic UI widgets
+      if (targetViewId === 'dashboard-view') renderDashboardOverview();
+      if (targetViewId === 'orders-view') renderOrdersCatalog();
+      if (targetViewId === 'products-view') renderProductsTable();
+      if (targetViewId === 'stock-view') renderStockTable();
+      if (targetViewId === 'messages-view') renderMessagingBox();
+
+      lucide.createIcons();
+      toggleMobileSidebar(true); // Always close mobile drawer on tab click
+    }
+
+    // Toggle Mobile Sidebar drawer on small viewport widths
+    function toggleMobileSidebar(forceClose = false) {
+      const sidebar = document.getElementById('sidebar');
+      if (forceClose) {
+        sidebar.classList.add('hidden');
+        sidebar.classList.remove('flex');
+        return;
+      }
+      sidebar.classList.toggle('hidden');
+      sidebar.classList.toggle('flex');
+    }
+
+    // 1. GENEL BAKIŞ RENDERING ENGINE
+    function renderDashboardOverview() {
+      // Calculate active metrics
+      const activeStockAlerts = state.products.filter(p => p.stock === 0).length;
+      const pendingOrders = state.orders.filter(o => o.status === 'Yeni').length;
+      
+      // Calculate daily simulation revenue
+      let calculatedRev = 0;
+      state.orders.forEach(o => {
+        if (o.status !== 'İptal') {
+          calculatedRev += o.price;
+        }
+      });
+
+      // Bind data values to DOM
+      document.getElementById('dash-widget-revenue').textContent = calculatedRev.toLocaleString('tr-TR', { minimumFractionDigits: 2 });
+      document.getElementById('dash-widget-new-orders').textContent = pendingOrders;
+      document.getElementById('dash-widget-stock-alerts').textContent = activeStockAlerts;
+      
+      // Render badges in sidebar links
+      document.getElementById('badge-orders-count').textContent = `${pendingOrders} Yeni`;
+      document.getElementById('badge-stock-warnings').textContent = `${activeStockAlerts} Uyarı`;
+
+      const unreadCount = state.chats.filter(c => c.unread).length;
+      document.getElementById('badge-unread-msgs').textContent = unreadCount;
+
+      // Populate Activities Feed inside overview
+      const activityContainer = document.getElementById('dashboard-activity-feed');
+      activityContainer.innerHTML = '';
+      state.activities.forEach(act => {
+        const item = document.createElement('div');
+        item.className = "flex items-start gap-3 p-3 hover:bg-brand-bg rounded-xl transition-all border border-transparent hover:border-brand-borderLight";
+        item.innerHTML = `
+          <span class="p-1.5 bg-brand-bg rounded-lg ${act.color}"><i data-lucide="${act.icon}" class="w-4 h-4"></i></span>
+          <div class="flex-grow">
+            <p class="text-xs font-semibold text-brand-text">${act.text}</p>
+            <span class="text-[10px] text-gray-400 block mt-0.5">${act.time}</span>
+          </div>
+        `;
+        activityContainer.appendChild(item);
+      });
+      lucide.createIcons();
+    }
+
+    // 2. SIPARIŞLER OPERATION DESK
+    let activeOrdersFilter = 'Yeni';
+    function filterOrdersTab(status, button) {
+      activeOrdersFilter = status;
+      const tabs = document.querySelectorAll('.order-tab-btn');
+      tabs.forEach(t => {
+        t.classList.remove('border-brand-orange', 'text-brand-orange', 'font-extrabold');
+        t.classList.add('border-transparent', 'text-gray-400', 'font-bold');
+      });
+      button.classList.remove('border-transparent', 'text-gray-400', 'font-bold');
+      button.classList.add('border-brand-orange', 'text-brand-orange', 'font-extrabold');
+
+      renderOrdersCatalog();
+    }
+
+    function renderOrdersCatalog() {
+      const container = document.getElementById('orders-grid-container');
+      container.innerHTML = '';
+
+      const filtered = state.orders.filter(o => {
+        if (activeOrdersFilter === 'İadeler') {
+          return o.status === 'İade' || o.status === 'İptal';
+        }
+        return o.status === activeOrdersFilter;
+      });
+
+      if (filtered.length === 0) {
+        container.className = "block text-center py-12 max-w-sm mx-auto space-y-4";
+        container.innerHTML = `
+          <div class="w-16 h-16 bg-brand-orangeSoft rounded-full mx-auto flex items-center justify-center text-brand-orange">
+            <i data-lucide="package-open" class="w-8 h-8"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-brand-text text-sm">Burada Sipariş Bulunmuyor</h4>
+            <p class="text-xs text-gray-400 mt-1">İlgili operasyon aşamasında şu an bekleyen siparişiniz yoktur.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.className = "grid grid-cols-1 md:grid-cols-2 gap-5";
+      filtered.forEach(o => {
+        const card = document.createElement('div');
+        card.className = "bg-white border border-brand-borderLight rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between";
+        
+        let actionButtons = "";
+        if (o.status === 'Yeni') {
+          actionButtons = `
+            <button onclick="updateOrderStatus('${o.id}', 'Hazırlanıyor')" class="bg-brand-orange hover:bg-brand-orangeHover text-white px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="check" class="w-4 h-4"></i> Hazırlamaya Başla
+            </button>
+            <button onclick="updateOrderStatus('${o.id}', 'İptal')" class="text-xs text-gray-400 hover:text-red-500 font-bold px-2 py-2">Siparişi Reddet</button>
+          `;
+        } else if (o.status === 'Hazırlanıyor') {
+          actionButtons = `
+            <button onclick="updateOrderStatus('${o.id}', 'Kuryeye Verildi')" class="bg-brand-green hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="truck" class="w-4 h-4"></i> Kuryeye Teslim Et
+            </button>
+          `;
+        } else if (o.status === 'Kuryeye Verildi') {
+          actionButtons = `
+            <button onclick="updateOrderStatus('${o.id}', 'Teslim Edildi')" class="bg-brand-text hover:bg-black text-white px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="check-circle" class="w-4 h-4"></i> Teslimatı Tamamla
+            </button>
+          `;
+        } else {
+          actionButtons = `
+            <span class="text-xs text-gray-400 font-bold italic">Sipariş süreci tamamlanmıştır.</span>
+          `;
+        }
+
+        let deliveryClass = "bg-brand-orangeSoft text-brand-orange";
+        if (o.delivery === 'Ada Express') deliveryClass = "bg-brand-greenSoft text-brand-green font-bold";
+
+        card.innerHTML = `
+          <div class="space-y-3">
+            <div class="flex items-center justify-between border-b border-brand-bg pb-3">
+              <div>
+                <span class="text-xs text-gray-400">Sipariş Kodu</span>
+                <strong class="text-sm font-mono text-brand-text block mt-0.5">#ADY-${o.id}</strong>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-1 rounded-md ${deliveryClass}">${o.delivery}</span>
+            </div>
+            
+            <div class="text-xs space-y-1">
+              <p class="text-gray-400">Alıcı: <strong class="text-brand-text">${o.customer} (${o.location})</strong></p>
+              <p class="text-gray-400">Ürün: <strong class="text-brand-text">${o.product}</strong></p>
+              <p class="text-gray-400">Tutar: <strong class="text-brand-orange font-bold">${o.price} TL</strong></p>
+              <p class="text-[10px] text-gray-400">Tarih: ${o.date}</p>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-3 border-t border-brand-bg">
+            <div class="flex items-center gap-2">
+              ${actionButtons}
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    function updateOrderStatus(id, newStatus) {
+      const order = state.orders.find(o => o.id === id);
+      if (order) {
+        order.status = newStatus;
+        triggerToast(`Sipariş #${id} durumu "${newStatus}" olarak güncellendi.`);
+        
+        // Append to dashboard activity feed
+        state.activities.unshift({
+          text: `Sipariş #${id} durumu "${newStatus}" olarak güncellendi.`,
+          time: "Az önce",
+          icon: "refresh-cw",
+          color: "text-brand-orange"
+        });
+
+        renderOrdersCatalog();
+        renderDashboardOverview();
+      }
+    }
+
+    // 3. ÜRÜNLERIM LIST FILTER & TOGGLE ENGINE
+    function renderProductsTable() {
+      const tbody = document.getElementById('inventory-rows');
+      tbody.innerHTML = '';
+
+      state.products.forEach(p => {
+        let statusClass = "bg-brand-greenSoft text-brand-green";
+        if (p.status === 'Onay Bekliyor') statusClass = "bg-amber-100 text-brand-accentGold";
+        if (p.status === 'Stokta Yok') statusClass = "bg-red-50 text-red-500";
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-brand-bg transition-colors";
+        tr.innerHTML = `
+          <td class="p-4">
+            <div class="w-10 h-12 rounded-lg bg-brand-grayCard overflow-hidden border border-brand-borderLight/60">
+              <img src="${p.img}" class="w-full h-full object-cover">
+            </div>
+          </td>
+          <td class="p-4">
+            <span class="font-extrabold text-brand-text block text-xs md:text-sm">${p.name}</span>
+            <span class="text-[10px] text-gray-400 block mt-0.5">Kategori: ${p.category} | SKU: ${p.sku}</span>
+          </td>
+          <td class="p-4 font-bold text-brand-text">${p.stock} Adet</td>
+          <td class="p-4 font-black text-brand-text text-xs md:text-sm">${p.price} TL</td>
+          <td class="p-4">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border border-brand-borderLight/10 ${statusClass}">${p.status}</span>
+          </td>
+          <td class="p-4 text-gray-400 text-[10px] md:text-xs">${p.lastUpdate}</td>
+          <td class="p-4 text-right">
+            <button onclick="editProductPrompt('${p.sku}')" class="text-brand-orange hover:underline font-bold mr-2">Düzenle</button>
+            <button onclick="deleteProduct('${p.sku}')" class="text-gray-400 hover:text-red-500 hover:underline">Sil</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterProductCatalog() {
+      const query = document.getElementById('product-search').value.toLowerCase().trim();
+      const cat = document.getElementById('product-filter-category').value;
+      const stat = document.getElementById('product-filter-status').value;
+
+      const rows = document.querySelectorAll('#inventory-rows tr');
+      rows.forEach((row, idx) => {
+        const item = state.products[idx];
+        if (!item) return;
+
+        const nameMatch = item.name.toLowerCase().includes(query) || item.sku.toLowerCase().includes(query);
+        const catMatch = cat === 'Tümü' || item.category === cat;
+        const statusMatch = stat === 'Tümü' || item.status === stat;
+
+        if (nameMatch && catMatch && statusMatch) {
+          row.classList.remove('hidden');
+        } else {
+          row.classList.add('hidden');
+        }
+      });
+    }
+
+    function deleteProduct(sku) {
+      state.products = state.products.filter(p => p.sku !== sku);
+      triggerToast("Ürün başarıyla dükkan vitrininden silindi.");
+      renderProductsTable();
+      renderDashboardOverview();
+    }
+
+    // 4. STOK & FIYAT OPERATIONAL SHEET
+    function renderStockTable() {
+      const tbody = document.getElementById('stock-table-rows');
+      tbody.innerHTML = '';
+
+      state.products.forEach(p => {
+        let statusLabel = `<span class="bg-brand-greenSoft text-brand-green text-[10px] font-bold px-2 py-0.5 rounded-full">Aktif</span>`;
+        if (p.stock === 0) {
+          statusLabel = `<span class="bg-red-50 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded-full">Tükendi</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-brand-bg transition-colors";
+        tr.innerHTML = `
+          <td class="p-4">
+            <div class="w-8 h-10 rounded-lg bg-brand-grayCard overflow-hidden">
+              <img src="${p.img}" class="w-full h-full object-cover">
+            </div>
+          </td>
+          <td class="p-4 font-bold text-brand-text">${p.name}</td>
+          <td class="p-4 font-mono text-gray-400 text-[11px]">${p.sku}</td>
+          <td class="p-4">
+            <input type="number" id="quick-stock-${p.sku}" value="${p.stock}" class="w-16 border border-brand-borderLight bg-brand-bg rounded p-1 text-center font-bold">
+          </td>
+          <td class="p-4">
+            <input type="number" id="quick-price-${p.sku}" value="${p.price}" class="w-24 border border-brand-borderLight bg-brand-bg rounded p-1 text-center font-black text-brand-orange">
+          </td>
+          <td class="p-4 text-right">${statusLabel}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function saveAllStocksAndPrices() {
+      state.products.forEach(p => {
+        const stockVal = document.getElementById(`quick-stock-${p.sku}`).value;
+        const priceVal = document.getElementById(`quick-price-${p.sku}`).value;
+
+        p.stock = parseInt(stockVal);
+        p.price = parseInt(priceVal);
+
+        if (p.stock === 0) p.status = 'Stokta Yok';
+        else if (p.status === 'Stokta Yok') p.status = 'Yayında';
+      });
+
+      triggerToast("Tüm stok ve birim fiyat güncellemeleriniz başarıyla kaydedildi.");
+      renderDashboardOverview();
+    }
+
+    // 5. YENI ÜRÜN EKLE STEP WIZARD UTILITIES
+    function navigateWizard(direction) {
+      const nextStep = state.wizard.currentStep + direction;
+      if (nextStep < 1 || nextStep > 8) return;
+
+      document.getElementById(`wizard-step-${state.wizard.currentStep}`).classList.add('hidden');
+      document.getElementById(`wizard-step-${nextStep}`).classList.remove('hidden');
+
+      state.wizard.currentStep = nextStep;
+
+      // Render Progress Bar Calculations
+      const pct = (state.wizard.currentStep / 8) * 100;
+      document.getElementById('wizard-progress-bar').style.width = `${pct}%`;
+      document.getElementById('step-count-indicator').textContent = state.wizard.currentStep;
+
+      // Desktop steps highlight toggle
+      for (let i = 1; i <= 8; i++) {
+        const lbl = document.getElementById(`step-label-${i}`);
+        if (lbl) {
+          lbl.classList.remove('text-brand-orange', 'font-black');
+          lbl.classList.add('text-gray-400');
+        }
+      }
+      const activeLbl = document.getElementById(`step-label-${state.wizard.currentStep}`);
+      if (activeLbl) {
+        activeLbl.classList.remove('text-gray-400');
+        activeLbl.classList.add('text-brand-orange', 'font-black');
+      }
+
+      // Action Buttons Manager
+      const prevBtn = document.getElementById('btn-prev-step');
+      const nextBtn = document.getElementById('btn-next-step');
+
+      if (state.wizard.currentStep === 1) {
+        prevBtn.disabled = true;
+        prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        prevBtn.disabled = false;
+        prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+
+      if (state.wizard.currentStep === 8) {
+        nextBtn.innerHTML = 'Yayına Al <i data-lucide="check" class="w-4 h-4"></i>';
+        nextBtn.onclick = publishProductWizard;
+      } else {
+        nextBtn.innerHTML = 'İleri <i data-lucide="arrow-right" class="w-4 h-4"></i>';
+        nextBtn.onclick = function() { navigateWizard(1); };
+      }
+
+      lucide.createIcons();
+    }
+
+    function selectCategory(button, name) {
+      state.wizard.selectedCategory = name;
+      document.getElementById('p-selected-cat').value = name;
+
+      const btns = document.querySelectorAll('.cat-card-btn');
+      btns.forEach(b => {
+        b.classList.remove('border-brand-orange', 'bg-brand-orangeSoft');
+        b.classList.add('border-brand-borderLight', 'bg-brand-bg');
+      });
+
+      button.classList.remove('border-brand-borderLight', 'bg-brand-bg');
+      button.classList.add('border-brand-orange', 'bg-brand-orangeSoft');
+    }
+
+    function setPreviewImage(src) {
+      state.wizard.draftImg = src;
+      document.getElementById('preview-mock-img').src = src;
+      triggerToast("Görsel başarıyla ürüne yüklendi.");
+    }
+
+    function syncLivePreview() {
+      const name = document.getElementById('p-name').value || 'Canlı Ürün Başlığı';
+      const brand = document.getElementById('p-brand').value || 'Koleksiyon/Marka';
+      const price = document.getElementById('p-price').value || '0';
+
+      document.getElementById('preview-mock-title').textContent = name;
+      document.getElementById('preview-mock-brand').textContent = brand;
+      document.getElementById('preview-mock-price').textContent = `${price} TL`;
+    }
+
+    function addNewVariant() {
+      const color = document.getElementById('var-color').value;
+      const size = document.getElementById('var-size').value;
+      const table = document.getElementById('variant-table-rows');
+
+      const tr = document.createElement('tr');
+      tr.className = "hover:bg-brand-bg transition-colors";
+      tr.innerHTML = `
+        <td class="p-3 font-bold text-brand-text">${color}</td>
+        <td class="p-3 font-bold text-brand-orange">${size}</td>
+        <td class="p-3">10</td>
+        <td class="p-3 font-bold">520 TL</td>
+        <td class="p-3 text-right">
+          <span class="bg-brand-greenSoft text-brand-green text-[10px] font-bold px-2 py-0.5 rounded-full border border-brand-green/10">Aktif</span>
+        </td>
+      `;
+      table.appendChild(tr);
+      triggerToast(`Yeni varyant kombini eklendi: ${color} - ${size}`);
+    }
+
+    function publishProductWizard() {
+      // Create new catalog entry from Form inputs
+      const name = document.getElementById('p-name').value || "Yeni Keten Ürün";
+      const sku = document.getElementById('p-sku').value || "ADY-NEW-01";
+      const price = parseInt(document.getElementById('p-price').value) || 520;
+      const stock = parseInt(document.getElementById('p-total-stock').value) || 10;
+
+      const newEntry = {
+        id: state.products.length + 1,
+        name: name,
+        sku: sku,
+        category: state.wizard.selectedCategory,
+        stock: stock,
+        price: price,
+        status: "Yayında",
+        img: state.wizard.draftImg,
+        lastUpdate: "Az önce"
+      };
+
+      state.products.push(newEntry);
+      triggerToast("Tebrikler! Ürününüz kontrol sürecinden sonra doğrudan dükkan vitrininde listelenecektir.");
+
+      // Return to overview catalog
+      setTimeout(() => {
+        switchView('products-view', document.getElementById('nav-products-view'));
+        // Reset wizard forms
+        document.getElementById('p-name').value = '';
+        document.getElementById('p-brand').value = '';
+        state.wizard.currentStep = 1;
+        navigateWizard(0); // re-trigger layout checks
+      }, 1500);
+    }
+
+    // 6. MÜŞTERI MESAJLARI REAL-TIME CHAT
+    let activeChatId = "chat-ayse";
+    function renderMessagingBox() {
+      const inboxList = document.getElementById('msg-threads-list');
+      inboxList.innerHTML = '';
+
+      state.chats.forEach(c => {
+        const latestMsg = c.messages[c.messages.length - 1];
+        const item = document.createElement('button');
+        item.onclick = function() { loadConversation(c.id); };
+        item.className = `w-full text-left p-4 flex flex-col gap-1 transition-all ${c.id === activeChatId ? 'bg-brand-orangeSoft/50 border-l-4 border-brand-orange' : 'hover:bg-brand-bg bg-white'}`;
+        
+        let unreadBadge = "";
+        if (c.unread) {
+          unreadBadge = `<span class="bg-blue-500 w-2.5 h-2.5 rounded-full"></span>`;
+        }
+
+        item.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold text-brand-text text-xs">${c.user}</span>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[9px] text-gray-400">${latestMsg ? latestMsg.time : ''}</span>
+              ${unreadBadge}
+            </div>
+          </div>
+          <p class="text-[11px] text-gray-400 truncate">${latestMsg ? latestMsg.text : ''}</p>
+        `;
+        inboxList.appendChild(item);
+      });
+
+      // Render active message stream
+      const chat = state.chats.find(c => c.id === activeChatId);
+      const stream = document.getElementById('msg-chat-stream');
+      stream.innerHTML = '';
+
+      if (chat) {
+        document.getElementById('active-chat-user').textContent = chat.user;
+        document.getElementById('active-chat-sku').textContent = `İlgili Ürün SKU: ${chat.sku}`;
+
+        chat.messages.forEach(m => {
+          const block = document.createElement('div');
+          if (m.sender === 'customer') {
+            block.className = "flex justify-start";
+            block.innerHTML = `
+              <div class="bg-white border border-brand-borderLight p-3.5 rounded-2xl max-w-sm text-xs text-brand-text shadow-xs">
+                ${m.text}
+              </div>
+            `;
+          } else {
+            block.className = "flex justify-end";
+            block.innerHTML = `
+              <div class="bg-brand-text text-white p-3.5 rounded-2xl max-w-sm text-xs shadow-md">
+                ${m.text}
+              </div>
+            `;
+          }
+          stream.appendChild(block);
+        });
+      }
+    }
+
+    function loadConversation(id) {
+      activeChatId = id;
+      const chat = state.chats.find(c => c.id === id);
+      if (chat) chat.unread = false; // Mark read
+
+      renderMessagingBox();
+      renderDashboardOverview();
+    }
+
+    function insertQuickReply(text) {
+      document.getElementById('chat-input-text').value = text;
+    }
+
+    function sendChatMessage() {
+      const text = document.getElementById('chat-input-text').value.trim();
+      if (text.length === 0) return;
+
+      const chat = state.chats.find(c => c.id === activeChatId);
+      if (chat) {
+        chat.messages.push({
+          sender: "seller",
+          text: text,
+          time: "Az önce"
+        });
+
+        document.getElementById('chat-input-text').value = '';
+        renderMessagingBox();
+        triggerToast("Mesaj alıcıya başarıyla gönderildi.");
+
+        // Simulated Automatic Customer Response for immersive feel
+        setTimeout(() => {
+          chat.messages.push({
+            sender: "customer",
+            text: "Çok teşekkür ederim! Hemen sepete ekliyorum siparişinizi.",
+            time: "Az önce"
+          });
+          renderMessagingBox();
+        }, 1200);
+      }
+    }
+
+    // 7. KAMPANYALAR MANAGEMENT WIDGETS
+    function openNewCampaignModal() {
+      document.getElementById('new-campaign-modal').classList.remove('hidden');
+    }
+
+    function closeNewCampaignModal() {
+      document.getElementById('new-campaign-modal').classList.add('hidden');
+    }
+
+    function submitNewCampaign() {
+      const title = document.getElementById('camp-title').value.trim();
+      const code = document.getElementById('camp-code').value.trim();
+      if (!title || !code) {
+        triggerToast("Lütfen tüm zorunlu kampanya alanlarını doldurun.");
+        return;
+      }
+      triggerToast(`"${title}" indirim başvurunuz Adayol moderatör onayına iletildi.`);
+      closeNewCampaignModal();
+    }
+
+    // 8. PROFIL GÜNCELLEME DETAYLARI
+    function updateStoreProfileDetails() {
+      const storeName = document.getElementById('prof-store-name').value.trim();
+      const slogan = document.getElementById('prof-store-slogan').value.trim();
+
+      if (storeName.length === 0) return;
+
+      state.storeName = storeName;
+      state.storeSlogan = slogan;
+
+      // Update globally loaded top header labels
+      document.getElementById('top-header-store-name').textContent = storeName;
+      document.getElementById('side-profile-name').textContent = storeName;
+
+      // Update side profile short avatar
+      const initials = storeName.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+      document.getElementById('side-profile-avatar').textContent = initials;
+      document.getElementById('prof-avatar-preview').textContent = initials;
+
+      triggerToast("Mağaza vitrin profil detaylarınız başarıyla güncellendi.");
+    }
+
+    // Global Operational Notification Engine (Toast UI component launcher)
+    function triggerToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').textContent = message;
+
+      toast.classList.add('show');
+      toast.classList.remove('opacity-0');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        toast.classList.add('opacity-0');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
