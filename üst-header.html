@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="tr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>adayol - KKTC Yerel Alışveriş Pazaryeri</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Google Fonts - Inter (Modern Sans-Serif) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            terracotta: '#E66A3C',
+            terracottaDark: '#D1592D',
+            charcoal: '#1A1A1A',
+            bglight: '#FAF8F4',
+            bordercol: '#EEE7DE',
+            muted: '#6F6A64',
+            greenlive: '#10B981',
+            counterred: '#EF4444',
+            campaignbg: '#FFF1EC',
+            campaignborder: '#F6D8CC'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar Hiding for Categories & Carousel */
+    .scrollbar-none::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-none {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+
+    /* Pulse & Transition Animations */
+    @keyframes pulse-soft {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.9; }
+    }
+    .animate-pulse-soft {
+      animation: pulse-soft 2s infinite ease-in-out;
+    }
+
+    /* Live text transitions */
+    .fade-text {
+      transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+    .fade-out {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    .fade-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Smooth campaign marquee style on mobile */
+    @media (max-width: 768px) {
+      .marquee-mobile {
+        display: flex;
+        width: max-content;
+        animation: marquee 22s linear infinite;
+      }
+      .marquee-container {
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
+
+    @keyframes marquee {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-50%, 0, 0); }
+    }
+  </style>
+</head>
+<body class="bg-[#FAF8F4] text-[#1A1A1A] font-sans antialiased selection:bg-[#E66A3C]/10 selection:text-[#E66A3C]">
+
+  <!-- 1. ÜST SİYAH CANLI BAR -->
+  <div class="h-[34px] bg-[#1A1A1A] w-full flex items-center justify-between px-4 sm:px-6 md:px-8 border-b border-[#2A2A2A] z-50 sticky top-0">
+    <!-- Sol Canlı Bilgisi -->
+    <div class="flex items-center space-x-2">
+      <span class="bg-[#E66A3C] text-white text-[9px] font-bold tracking-wider px-1.5 py-0.5 rounded flex items-center justify-center">CANLI</span>
+      <span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span>
+      <span id="liveText" class="text-white/90 text-xs font-medium tracking-normal fade-text">Yükleniyor...</span>
+    </div>
+
+    <!-- Sağ Bilgilendirmeler (Sadece Desktop) -->
+    <div class="hidden md:flex items-center space-x-6 text-[11px] text-white/70 font-normal">
+      <div class="flex items-center space-x-1">
+        <i data-lucide="clock" class="w-3.5 h-3.5 text-[#E66A3C]"></i>
+        <span>Son Teslimat Saati: 19:30</span>
+      </div>
+      <div class="flex items-center space-x-1">
+        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#E66A3C]"></i>
+        <span>KKTC içi 24 Saatte Teslimat</span>
+      </div>
+      <div class="flex items-center space-x-1">
+        <i data-lucide="store" class="w-3.5 h-3.5 text-[#E66A3C]"></i>
+        <span>35 Aktif Mağaza</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. HEADER -->
+  <header class="bg-white w-full border-b border-[#EEE7DE] sticky top-[34px] z-40 shadow-sm transition-all duration-300">
+    <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center min-h-[86px] py-3 md:py-0">
+      
+      <!-- Desktop & Base Row -->
+      <div class="flex items-center justify-between w-full md:h-[86px] gap-4">
+        
+        <!-- Logo -->
+        <a href="#" class="flex items-center shrink-0">
+          <span class="text-[#1A1A1A] font-extrabold text-[26px] tracking-tight">aday</span><span class="text-[#E66A3C] font-black text-[26px] tracking-tight">o</span><span class="text-[#1A1A1A] font-extrabold text-[26px] tracking-tight">l</span>
+        </a>
+
+        <!-- Arama Alanı (Desktop) -->
+        <div class="hidden md:flex flex-1 max-w-[720px] relative items-center">
+          <i data-lucide="search" class="w-5 h-5 text-[#6F6A64] absolute left-4 pointer-events-none"></i>
+          <input 
+            type="text" 
+            placeholder="Ürün, mağaza veya kategori ara..." 
+            class="w-full h-[50px] pl-12 pr-6 rounded-full border border-[#EEE7DE] bg-white text-sm focus:outline-none focus:border-[#E66A3C] focus:ring-4 focus:ring-[#E66A3C]/10 transition-all text-[#1A1A1A] placeholder:text-[#6F6A64]/70 font-medium"
+          >
+        </div>
+
+        <!-- Sağ Aksiyonlar -->
+        <div class="flex items-center space-x-4 md:space-x-6">
+          <!-- Favorilerim -->
+          <button onclick="toggleFavModal()" class="flex items-center space-x-2 text-[#1A1A1A] hover:text-[#E66A3C] transition-colors group relative">
+            <div class="relative">
+              <i data-lucide="heart" class="w-5.5 h-5.5 transition-transform group-hover:scale-105"></i>
+              <span id="favCount" class="absolute -top-1.5 -right-1.5 bg-[#E66A3C] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center opacity-0 transition-opacity">0</span>
+            </div>
+            <span class="hidden lg:inline text-[13px] font-semibold">Favorilerim</span>
+          </button>
+
+          <!-- Sepetim -->
+          <button onclick="toggleCartModal()" class="flex items-center space-x-2 text-[#1A1A1A] hover:text-[#E66A3C] transition-colors group relative">
+            <div class="relative">
+              <i data-lucide="shopping-bag" class="w-5.5 h-5.5 transition-transform group-hover:scale-105"></i>
+              <span id="cartCount" class="absolute -top-1.5 -right-1.5 bg-[#E66A3C] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+            </div>
+            <span class="hidden lg:inline text-[13px] font-semibold">Sepetim</span>
+          </button>
+
+          <!-- Mağaza Girişi (Sadece Desktop) -->
+          <a href="#" class="hidden md:inline-flex items-center justify-center px-5 py-2.5 border-2 border-[#1A1A1A] hover:border-[#E66A3C] hover:text-[#E66A3C] text-[#1A1A1A] rounded-full text-[13px] font-bold transition-all">
+            Mağaza Girişi
+          </a>
+        </div>
+      </div>
+
+      <!-- Mobil Arama Alanı (Sadece Mobilde İkinci Satır Olarak) -->
+      <div class="mt-3 md:hidden w-full relative flex items-center">
+        <i data-lucide="search" class="w-5 h-5 text-[#6F6A64] absolute left-4 pointer-events-none"></i>
+        <input 
+          type="text" 
+          placeholder="Ürün, mağaza veya kategori ara..." 
+          class="w-full h-[46px] pl-12 pr-6 rounded-full border border-[#EEE7DE] bg-white text-xs focus:outline-none focus:border-[#E66A3C] focus:ring-4 focus:ring-[#E66A3C]/10 transition-all text-[#1A1A1A] placeholder:text-[#6F6A64]/70 font-medium"
+        >
+      </div>
+
+    </div>
+  </header>
+
+  <!-- 3. İKONLU KATEGORİ ALANI -->
+  <section class="bg-white border-b border-[#EEE7DE] w-full">
+    <div class="max-w-[1280px] mx-auto px-4 md:px-8">
+      <!-- Scrollable Container -->
+      <div class="flex items-center md:justify-center overflow-x-auto scrollbar-none gap-6 md:gap-8 py-4">
+        
+        <!-- Ada Express (Aktif Kategori) -->
+        <a href="#" class="flex flex-col items-center flex-shrink-0 group relative pb-1 border-b-3 border-[#E66A3C] min-w-[92px]">
+          <div class="relative w-12 h-12 rounded-full bg-[#FAF8F4] border border-[#EEE7DE] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <!-- Express Badge -->
+            <span class="absolute -top-1 -right-2 bg-[#E66A3C] text-white text-[8px] font-black px-1 py-0.5 rounded-md shadow-sm">EXPRESS</span>
+            <i data-lucide="zap" class="w-6 h-6 text-[#E66A3C]"></i>
+          </div>
+          <span class="text-xs font-bold text-[#1A1A1A] mt-2 group-hover:text-[#E66A3C] transition-colors">Ada Express</span>
+          <div class="absolute bottom-[-16px] left-0 right-0 h-[3px] bg-[#E66A3C] rounded-full"></div>
+        </a>
+
+        <!-- Elektronik -->
+        <a href="#" class="flex flex-col items-center flex-shrink-0 group min-w-[92px]">
+          <div class="w-12 h-12 rounded-full bg-[#FAF8F4] border border-[#EEE7DE] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <i data-lucide="smartphone" class="w-5 h-5 text-[#1A1A1A] group-hover:text-[#E66A3C] transition-colors"></i>
+          </div>
+          <span class="text-xs font-medium text-[#1A1A1A] mt-2 group-hover:text-[#E66A3C] transition-colors">Elektronik</span>
+        </a>
+
+        <!-- Moda -->
+        <a href="#" class="flex flex-col items-center flex-shrink-0 group min-w-[92px]">
+          <div class="w-12 h-12 rounded-full bg-[#FAF8F4] border border-[#EEE7DE] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <i data-lucide="shirt" class="w-5 h-5 text-[#1A1A1A] group-hover:text-[#E66A3C] transition-colors"></i>
+          </div>
+          <span class="text-xs font-medium text-[#1A1A1A] mt-2 group-hover:text-[#E66A3C] transition-colors">Moda</span>
+        </a>
+
+        <!-- Ev & Yaşam -->
+        <a href="#" class="flex flex-col items-center flex-shrink-0 group min-w-[92px]">
+          <div class="w-12 h-12 rounded-full bg-[#FAF8F4] border border-[#EEE7DE] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <i data-lucide="home" class="w-5 h-5 text-[#1A1A1A] group-hover:text-[#E66A3C] transition-colors"></i>
+          </div>
+          <span class="text-xs font-medium text-[#1A1A1A] mt-2 group-hover:text-[#E66A3C] transition-colors">Ev & Yaşam</span>
+        </a>
+
+        <!-- Kozmetik -->
+        <a href="#" class="flex flex-col items-center flex-shrink-0 group min-w-[92px]">
+          <div class="w-12 h-12 rounded-full bg-[#FAF8F4] border border-[#EEE7DE] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <i data-lucide="sparkles" class="w-5 h-5 text-[#1A1A1A] group-hover:text-[#E66A3C] transition-colors"></i>
+          </div>
+          <span class="text-xs font-medium text-[#1A1A1A] mt-2 group-hover:text-[#E66A3C] transition-colors">Kozmetik</span>
+        </a>
+
+        <!-- Yerel Üreticiler -->
+        <a href="#" class="flex flex-col items-center flex-shrink-0 group min-w-[92px]">
+          <div class="w-12 h-12 rounded-full bg-[#FAF8F4] border border-[#EEE7DE] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <i data-lucide="sprout" class="w-5 h-5 text-[#1A1A1A] group-hover:text-[#E66A3C] transition-colors"></i>
+          </div>
+          <span class="text-xs font-medium text-[#1A1A1A] mt-2 group-hover:text-[#E66A3C] transition-colors text-center whitespace-nowrap">Yerel Üreticiler</span>
+        </a>
+
+        <!-- Kahve & Gurme -->
+        <a href="#" class="flex flex-col items-center flex-shrink-0 group min-w-[92px]">
+          <div class="w-12 h-12 rounded-full bg-[#FAF8F4] border border-[#EEE7DE] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <i data-lucide="coffee" class="w-5 h-5 text-[#1A1A1A] group-hover:text-[#E66A3C] transition-colors"></i>
+          </div>
+          <span class="text-xs font-medium text-[#1A1A1A] mt-2 group-hover:text-[#E66A3C] transition-colors text-center">Kahve & Gurme</span>
+        </a>
+
+        <!-- Hediyelik -->
+        <a href="#" class="flex flex-col items-center flex-shrink-0 group min-w-[92px]">
+          <div class="w-12 h-12 rounded-full bg-[#FAF8F4] border border-[#EEE7DE] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <i data-lucide="gift" class="w-5 h-5 text-[#1A1A1A] group-hover:text-[#E66A3C] transition-colors"></i>
+          </div>
+          <span class="text-xs font-medium text-[#1A1A1A] mt-2 group-hover:text-[#E66A3C] transition-colors text-center">Hediyelik</span>
+        </a>
+
+        <!-- Çocuk -->
+        <a href="#" class="flex flex-col items-center flex-shrink-0 group min-w-[92px]">
+          <div class="w-12 h-12 rounded-full bg-[#FAF8F4] border border-[#EEE7DE] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <i data-lucide="smile" class="w-5 h-5 text-[#1A1A1A] group-hover:text-[#E66A3C] transition-colors"></i>
+          </div>
+          <span class="text-xs font-medium text-[#1A1A1A] mt-2 group-hover:text-[#E66A3C] transition-colors text-center">Çocuk</span>
+        </a>
+
+        <!-- Spor -->
+        <a href="#" class="flex flex-col items-center flex-shrink-0 group min-w-[92px]">
+          <div class="w-12 h-12 rounded-full bg-[#FAF8F4] border border-[#EEE7DE] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <i data-lucide="activity" class="w-5 h-5 text-[#1A1A1A] group-hover:text-[#E66A3C] transition-colors"></i>
+          </div>
+          <span class="text-xs font-medium text-[#1A1A1A] mt-2 group-hover:text-[#E66A3C] transition-colors text-center">Spor</span>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. İNCE KAMPANYA STRIP -->
+  <section class="bg-[#FFF1EC] border-y border-[#F6D8CC] w-full h-[34px] sm:h-[36px] flex items-center overflow-hidden z-10">
+    <div class="max-w-[1280px] mx-auto px-4 md:px-8 w-full flex items-center justify-center">
+      
+      <!-- Mobil / Masaüstü Entegre Marquee/Flex Yapısı -->
+      <div class="marquee-container w-full flex justify-center items-center">
+        <div class="marquee-mobile flex items-center space-x-4 md:space-x-0 justify-center">
+          
+          <div class="flex items-center space-x-3">
+            <span class="text-[#E66A3C] text-[11px] sm:text-xs font-bold md:font-semibold tracking-wide text-center">
+              🚀 Girne, Lefkoşa ve Mağusa’da 300 TL üzeri yerel siparişlerde express teslimat bedava.
+            </span>
+            <span class="bg-[#E66A3C] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm tracking-wide shrink-0">
+              KOD: ADAEXPRESS
+            </span>
+          </div>
+
+          <!-- Marquee çoğaltımı (Sadece mobilde kesintisiz kayma hissi için klonlanır) -->
+          <div class="flex md:hidden items-center space-x-3 pl-8">
+            <span class="text-[#E66A3C] text-[11px] font-bold tracking-wide">
+              🚀 Girne, Lefkoşa ve Mağusa’da 300 TL üzeri yerel siparişlerde express teslimat bedava.
+            </span>
+            <span class="bg-[#E66A3C] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm tracking-wide shrink-0">
+              KOD: ADAEXPRESS
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 5. FLASH İNDİRİMLER ALANI -->
+  <section class="max-w-[1280px] mx-auto my-6 px-4 md:px-8">
+    <div class="bg-white border border-[#EEE7DE] rounded-[20px] shadow-sm p-4 md:p-6">
+      
+      <!-- Başlık ve Kontroller -->
+      <div class="flex items-center justify-between border-b border-[#EEE7DE] pb-4 mb-6">
+        <div class="flex items-center space-x-3 flex-wrap gap-y-2">
+          <h2 class="text-lg md:text-xl font-extrabold text-[#1A1A1A] tracking-tight">Flash İndirimler</h2>
+          
+          <!-- Kırmızı Geri Sayım Rozeti -->
+          <div class="flex items-center space-x-1 bg-[#EF4444] text-white text-[12px] md:text-[13px] font-bold px-3 py-1 rounded-full animate-pulse-soft">
+            <i data-lucide="flame" class="w-3.5 h-3.5 text-white"></i>
+            <span id="countdown">02:43:53</span>
+          </div>
+        </div>
+
+        <!-- Carousel Kontrol Okları (Desktop) -->
+        <div class="hidden md:flex items-center space-x-2">
+          <button id="prevBtn" class="w-9 h-9 border border-[#EEE7DE] rounded-full flex items-center justify-center bg-white hover:bg-[#FAF8F4] active:scale-95 transition-all text-[#1A1A1A]">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+          </button>
+          <button id="nextBtn" class="w-9 h-9 border border-[#EEE7DE] rounded-full flex items-center justify-center bg-white hover:bg-[#FAF8F4] active:scale-95 transition-all text-[#1A1A1A]">
+            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Carousel Container -->
+      <div id="productCarousel" class="flex gap-4 overflow-x-auto scrollbar-none snap-x snap-mandatory scroll-smooth pb-2">
+        
+        <!-- Ürün Kartı 1 -->
+        <div class="flex-none w-[31vw] min-w-[125px] md:w-[240px] snap-start border border-[#EEE7DE] rounded-[18px] bg-white p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div>
+            <!-- Üst Görsel Alanı -->
+            <div class="relative w-full aspect-[3/4] rounded-[14px] overflow-hidden bg-gray-50 mb-2">
+              <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=80" alt="Spor Ayakkabı" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <!-- Sol Üst Etiket -->
+              <span class="absolute top-2 left-2 bg-[#1A1A1A] text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 rounded">Editörün Seçimi</span>
+              <!-- Sağ Üst Favori Butonu -->
+              <button onclick="toggleFav(this)" class="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white text-[#1A1A1A] active:scale-90 transition-all shadow-sm">
+                <i data-lucide="heart" class="w-4 h-4 text-gray-400 pointer-events-none transition-colors"></i>
+              </button>
+              <!-- Sol Alt İndirim Etiketi -->
+              <span class="absolute bottom-2 left-2 bg-[#EF4444] text-white text-[10px] md:text-xs font-black px-2 py-0.5 rounded-md shadow-sm">%25 İndirim</span>
+            </div>
+            <!-- Mağaza Bilgileri -->
+            <div class="flex items-center justify-between text-[10px] text-[#6F6A64] font-medium px-1">
+              <span>Runner Store</span>
+              <span class="text-[#E66A3C]">Lefkoşa</span>
+            </div>
+            <!-- Ürün Adı -->
+            <h3 class="text-xs md:text-sm font-bold text-[#1A1A1A] mt-1 line-clamp-2 min-h-[32px] md:min-h-[40px] px-1 hover:text-[#E66A3C] transition-colors cursor-pointer">
+              UltraLight Pro Koşu ve Spor Ayakkabısı
+            </h3>
+            <!-- Yıldız Puanı -->
+            <div class="flex items-center space-x-1 mt-1 px-1">
+              <div class="flex text-amber-400">
+                <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+              </div>
+              <span class="text-[10px] font-bold text-[#1A1A1A]">4.8</span>
+              <span class="text-[10px] text-[#6F6A64]">(144)</span>
+            </div>
+          </div>
+          <div>
+            <!-- Fiyat Alanı -->
+            <div class="mt-2 px-1">
+              <span class="text-xs text-[#6F6A64] line-through">1.850 TL</span>
+              <div class="text-sm md:text-base font-extrabold text-[#1A1A1A]">1.387 TL</div>
+            </div>
+            <!-- Güven Satırı -->
+            <div class="text-[9px] md:text-[10px] text-[#10B981] font-semibold flex items-center space-x-1 mt-1 mb-2 px-1">
+              <span>🟢 Stok Güncel</span>
+            </div>
+            <!-- Sepete Ekle Butonu -->
+            <button onclick="addToCart(this, 'UltraLight Pro Spor Ayakkabı')" class="w-full bg-[#1A1A1A] hover:bg-[#E66A3C] text-white text-xs font-bold py-2 px-3 rounded-[14px] flex items-center justify-center transition-all hover:shadow-sm">
+              Ekle +
+            </button>
+          </div>
+        </div>
+
+        <!-- Ürün Kartı 2 -->
+        <div class="flex-none w-[31vw] min-w-[125px] md:w-[240px] snap-start border border-[#EEE7DE] rounded-[18px] bg-white p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div>
+            <div class="relative w-full aspect-[3/4] rounded-[14px] overflow-hidden bg-gray-50 mb-2">
+              <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&auto=format&fit=crop&q=80" alt="Kozmetik Serum" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2 left-2 bg-[#E66A3C] text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 rounded">Adayol Seçimi</span>
+              <button onclick="toggleFav(this)" class="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white text-[#1A1A1A] active:scale-90 transition-all shadow-sm">
+                <i data-lucide="heart" class="w-4 h-4 text-gray-400 pointer-events-none transition-colors"></i>
+              </button>
+              <span class="absolute bottom-2 left-2 bg-[#EF4444] text-white text-[10px] md:text-xs font-black px-2 py-0.5 rounded-md shadow-sm">%15 İndirim</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-[#6F6A64] font-medium px-1">
+              <span>PureGlow Lab</span>
+              <span class="text-[#E66A3C]">Girne</span>
+            </div>
+            <h3 class="text-xs md:text-sm font-bold text-[#1A1A1A] mt-1 line-clamp-2 min-h-[32px] md:min-h-[40px] px-1 hover:text-[#E66A3C] transition-colors cursor-pointer">
+              Hyalüronik Asit Yoğun Nemlendirici Cilt Serumu
+            </h3>
+            <div class="flex items-center space-x-1 mt-1 px-1">
+              <div class="flex text-amber-400">
+                <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+              </div>
+              <span class="text-[10px] font-bold text-[#1A1A1A]">4.9</span>
+              <span class="text-[10px] text-[#6F6A64]">(89)</span>
+            </div>
+          </div>
+          <div>
+            <div class="mt-2 px-1">
+              <span class="text-xs text-[#6F6A64] line-through">420 TL</span>
+              <div class="text-sm md:text-base font-extrabold text-[#1A1A1A]">357 TL</div>
+            </div>
+            <div class="text-[9px] md:text-[10px] text-[#10B981] font-semibold flex items-center space-x-1 mt-1 mb-2 px-1">
+              <span>⚡ Bugün Güncellendi</span>
+            </div>
+            <button onclick="addToCart(this, 'PureGlow Cilt Serumu')" class="w-full bg-[#1A1A1A] hover:bg-[#E66A3C] text-white text-xs font-bold py-2 px-3 rounded-[14px] flex items-center justify-center transition-all hover:shadow-sm">
+              Ekle +
+            </button>
+          </div>
+        </div>
+
+        <!-- Ürün Kartı 3 -->
+        <div class="flex-none w-[31vw] min-w-[125px] md:w-[240px] snap-start border border-[#EEE7DE] rounded-[18px] bg-white p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div>
+            <div class="relative w-full aspect-[3/4] rounded-[14px] overflow-hidden bg-gray-50 mb-2">
+              <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&auto=format&fit=crop&q=80" alt="Kulaklık" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2 left-2 bg-[#F97316] text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 rounded">Ada Express</span>
+              <button onclick="toggleFav(this)" class="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white text-[#1A1A1A] active:scale-90 transition-all shadow-sm">
+                <i data-lucide="heart" class="w-4 h-4 text-gray-400 pointer-events-none transition-colors"></i>
+              </button>
+              <span class="absolute bottom-2 left-2 bg-[#EF4444] text-white text-[10px] md:text-xs font-black px-2 py-0.5 rounded-md shadow-sm">%30 İndirim</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-[#6F6A64] font-medium px-1">
+              <span>Ses Dünyası</span>
+              <span class="text-[#E66A3C]">Mağusa</span>
+            </div>
+            <h3 class="text-xs md:text-sm font-bold text-[#1A1A1A] mt-1 line-clamp-2 min-h-[32px] md:min-h-[40px] px-1 hover:text-[#E66A3C] transition-colors cursor-pointer">
+              Kablosuz Gürültü Engelleyici Bluetooth Kulaklık
+            </h3>
+            <div class="flex items-center space-x-1 mt-1 px-1">
+              <div class="flex text-amber-400">
+                <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+              </div>
+              <span class="text-[10px] font-bold text-[#1A1A1A]">4.6</span>
+              <span class="text-[10px] text-[#6F6A64]">(212)</span>
+            </div>
+          </div>
+          <div>
+            <div class="mt-2 px-1">
+              <span class="text-xs text-[#6F6A64] line-through">1.200 TL</span>
+              <div class="text-sm md:text-base font-extrabold text-[#1A1A1A]">840 TL</div>
+            </div>
+            <div class="text-[9px] md:text-[10px] text-[#10B981] font-semibold flex items-center space-x-1 mt-1 mb-2 px-1">
+              <span>🚚 Ada Express</span>
+            </div>
+            <button onclick="addToCart(this, 'Gürültü Engelleyici Kulaklık')" class="w-full bg-[#1A1A1A] hover:bg-[#E66A3C] text-white text-xs font-bold py-2 px-3 rounded-[14px] flex items-center justify-center transition-all hover:shadow-sm">
+              Ekle +
+            </button>
+          </div>
+        </div>
+
+        <!-- Ürün Kartı 4 -->
+        <div class="flex-none w-[31vw] min-w-[125px] md:w-[240px] snap-start border border-[#EEE7DE] rounded-[18px] bg-white p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div>
+            <div class="relative w-full aspect-[3/4] rounded-[14px] overflow-hidden bg-gray-50 mb-2">
+              <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&auto=format&fit=crop&q=80" alt="Gömlek" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2 left-2 bg-[#10B981] text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 rounded">Yerel Favori</span>
+              <button onclick="toggleFav(this)" class="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white text-[#1A1A1A] active:scale-90 transition-all shadow-sm">
+                <i data-lucide="heart" class="w-4 h-4 text-gray-400 pointer-events-none transition-colors"></i>
+              </button>
+              <span class="absolute bottom-2 left-2 bg-[#EF4444] text-white text-[10px] md:text-xs font-black px-2 py-0.5 rounded-md shadow-sm">%20 İndirim</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-[#6F6A64] font-medium px-1">
+              <span>Kıbrıs Tekstil</span>
+              <span class="text-[#E66A3C]">Lefkoşa</span>
+            </div>
+            <h3 class="text-xs md:text-sm font-bold text-[#1A1A1A] mt-1 line-clamp-2 min-h-[32px] md:min-h-[40px] px-1 hover:text-[#E66A3C] transition-colors cursor-pointer">
+              Doğal Keten Klasik Kesim Rahat Gömlek
+            </h3>
+            <div class="flex items-center space-x-1 mt-1 px-1">
+              <div class="flex text-amber-400">
+                <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+              </div>
+              <span class="text-[10px] font-bold text-[#1A1A1A]">4.7</span>
+              <span class="text-[10px] text-[#6F6A64]">(53)</span>
+            </div>
+          </div>
+          <div>
+            <div class="mt-2 px-1">
+              <span class="text-xs text-[#6F6A64] line-through">850 TL</span>
+              <div class="text-sm md:text-base font-extrabold text-[#1A1A1A]">680 TL</div>
+            </div>
+            <div class="text-[9px] md:text-[10px] text-[#10B981] font-semibold flex items-center space-x-1 mt-1 mb-2 px-1">
+              <span>🏬 Aktif Mağaza</span>
+            </div>
+            <button onclick="addToCart(this, 'Klasik Keten Gömlek')" class="w-full bg-[#1A1A1A] hover:bg-[#E66A3C] text-white text-xs font-bold py-2 px-3 rounded-[14px] flex items-center justify-center transition-all hover:shadow-sm">
+              Ekle +
+            </button>
+          </div>
+        </div>
+
+        <!-- Ürün Kartı 5 -->
+        <div class="flex-none w-[31vw] min-w-[125px] md:w-[240px] snap-start border border-[#EEE7DE] rounded-[18px] bg-white p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div>
+            <div class="relative w-full aspect-[3/4] rounded-[14px] overflow-hidden bg-gray-50 mb-2">
+              <img src="https://images.unsplash.com/photo-1531256456869-7f44cf6392ec?w=400&auto=format&fit=crop&q=80" alt="Ahşap Oyuncak" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2 left-2 bg-[#3B82F6] text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 rounded">Yeni Gelen</span>
+              <button onclick="toggleFav(this)" class="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white text-[#1A1A1A] active:scale-90 transition-all shadow-sm">
+                <i data-lucide="heart" class="w-4 h-4 text-gray-400 pointer-events-none transition-colors"></i>
+              </button>
+              <span class="absolute bottom-2 left-2 bg-[#EF4444] text-white text-[10px] md:text-xs font-black px-2 py-0.5 rounded-md shadow-sm">%10 İndirim</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-[#6F6A64] font-medium px-1">
+              <span>Zeka Atölyesi</span>
+              <span class="text-[#E66A3C]">Güzelyurt</span>
+            </div>
+            <h3 class="text-xs md:text-sm font-bold text-[#1A1A1A] mt-1 line-clamp-2 min-h-[32px] md:min-h-[40px] px-1 hover:text-[#E66A3C] transition-colors cursor-pointer">
+              Eğitici Ahşap Geometrik Blok Oyuncak Seti
+            </h3>
+            <div class="flex items-center space-x-1 mt-1 px-1">
+              <div class="flex text-amber-400">
+                <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+              </div>
+              <span class="text-[10px] font-bold text-[#1A1A1A]">5.0</span>
+              <span class="text-[10px] text-[#6F6A64]">(28)</span>
+            </div>
+          </div>
+          <div>
+            <div class="mt-2 px-1">
+              <span class="text-xs text-[#6F6A64] line-through">490 TL</span>
+              <div class="text-sm md:text-base font-extrabold text-[#1A1A1A]">441 TL</div>
+            </div>
+            <div class="text-[9px] md:text-[10px] text-[#EF4444] font-semibold flex items-center space-x-1 mt-1 mb-2 px-1">
+              <span>🔴 Son 8 Adet</span>
+            </div>
+            <button onclick="addToCart(this, 'Ahşap Geometrik Blok Oyuncak')" class="w-full bg-[#1A1A1A] hover:bg-[#E66A3C] text-white text-xs font-bold py-2 px-3 rounded-[14px] flex items-center justify-center transition-all hover:shadow-sm">
+              Ekle +
+            </button>
+          </div>
+        </div>
+
+        <!-- Ürün Kartı 6 (Airfryer) -->
+        <div class="flex-none w-[31vw] min-w-[125px] md:w-[240px] snap-start border border-[#EEE7DE] rounded-[18px] bg-white p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div>
+            <div class="relative w-full aspect-[3/4] rounded-[14px] overflow-hidden bg-gray-50 mb-2">
+              <img src="https://images.unsplash.com/photo-1621972750749-0fbb1abb7736?w=400&auto=format&fit=crop&q=80" alt="Airfryer" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2 left-2 bg-[#EF4444] text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 rounded">Süper İndirim</span>
+              <button onclick="toggleFav(this)" class="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white text-[#1A1A1A] active:scale-90 transition-all shadow-sm">
+                <i data-lucide="heart" class="w-4 h-4 text-gray-400 pointer-events-none transition-colors"></i>
+              </button>
+              <span class="absolute bottom-2 left-2 bg-[#EF4444] text-white text-[10px] md:text-xs font-black px-2 py-0.5 rounded-md shadow-sm">%40 İndirim</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-[#6F6A64] font-medium px-1">
+              <span>Smart Home</span>
+              <span class="text-[#E66A3C]">Lefkoşa</span>
+            </div>
+            <h3 class="text-xs md:text-sm font-bold text-[#1A1A1A] mt-1 line-clamp-2 min-h-[32px] md:min-h-[40px] px-1 hover:text-[#E66A3C] transition-colors cursor-pointer">
+              X-Smart Dokunmatik Airfryer Sıcak Hava Fritözü
+            </h3>
+            <div class="flex items-center space-x-1 mt-1 px-1">
+              <div class="flex text-amber-400">
+                <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+              </div>
+              <span class="text-[10px] font-bold text-[#1A1A1A]">4.7</span>
+              <span class="text-[10px] text-[#6F6A64]">(302)</span>
+            </div>
+          </div>
+          <div>
+            <div class="mt-2 px-1">
+              <span class="text-xs text-[#6F6A64] line-through">4.990 TL</span>
+              <div class="text-sm md:text-base font-extrabold text-[#1A1A1A]">2.994 TL</div>
+            </div>
+            <div class="text-[9px] md:text-[10px] text-[#10B981] font-semibold flex items-center space-x-1 mt-1 mb-2 px-1">
+              <span>🟢 Stok Güncel</span>
+            </div>
+            <button onclick="addToCart(this, 'X-Smart Airfryer')" class="w-full bg-[#1A1A1A] hover:bg-[#E66A3C] text-white text-xs font-bold py-2 px-3 rounded-[14px] flex items-center justify-center transition-all hover:shadow-sm">
+              Ekle +
+            </button>
+          </div>
+        </div>
+
+        <!-- Ürün Kartı 7 (Vazo / Ev Dekorasyonu) -->
+        <div class="flex-none w-[31vw] min-w-[125px] md:w-[240px] snap-start border border-[#EEE7DE] rounded-[18px] bg-white p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div>
+            <div class="relative w-full aspect-[3/4] rounded-[14px] overflow-hidden bg-gray-50 mb-2">
+              <img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&auto=format&fit=crop&q=80" alt="Vazo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2 left-2 bg-[#7C3AED] text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 rounded">Lefkoşa Trend</span>
+              <button onclick="toggleFav(this)" class="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white text-[#1A1A1A] active:scale-90 transition-all shadow-sm">
+                <i data-lucide="heart" class="w-4 h-4 text-gray-400 pointer-events-none transition-colors"></i>
+              </button>
+              <span class="absolute bottom-2 left-2 bg-[#EF4444] text-white text-[10px] md:text-xs font-black px-2 py-0.5 rounded-md shadow-sm">%20 İndirim</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-[#6F6A64] font-medium px-1">
+              <span>Artisan Home</span>
+              <span class="text-[#E66A3C]">Lefkoşa</span>
+            </div>
+            <h3 class="text-xs md:text-sm font-bold text-[#1A1A1A] mt-1 line-clamp-2 min-h-[32px] md:min-h-[40px] px-1 hover:text-[#E66A3C] transition-colors cursor-pointer">
+              Minimalist Seramik Dekoratif El Yapımı Vazo
+            </h3>
+            <div class="flex items-center space-x-1 mt-1 px-1">
+              <div class="flex text-amber-400">
+                <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+              </div>
+              <span class="text-[10px] font-bold text-[#1A1A1A]">4.9</span>
+              <span class="text-[10px] text-[#6F6A64]">(42)</span>
+            </div>
+          </div>
+          <div>
+            <div class="mt-2 px-1">
+              <span class="text-xs text-[#6F6A64] line-through">450 TL</span>
+              <div class="text-sm md:text-base font-extrabold text-[#1A1A1A]">360 TL</div>
+            </div>
+            <div class="text-[9px] md:text-[10px] text-[#10B981] font-semibold flex items-center space-x-1 mt-1 mb-2 px-1">
+              <span>⚡ Bugün Güncellendi</span>
+            </div>
+            <button onclick="addToCart(this, 'Dekoratif Seramik Vazo')" class="w-full bg-[#1A1A1A] hover:bg-[#E66A3C] text-white text-xs font-bold py-2 px-3 rounded-[14px] flex items-center justify-center transition-all hover:shadow-sm">
+              Ekle +
+            </button>
+          </div>
+        </div>
+
+        <!-- Ürün Kartı 8 (Güneş Gözlüğü) -->
+        <div class="flex-none w-[31vw] min-w-[125px] md:w-[240px] snap-start border border-[#EEE7DE] rounded-[18px] bg-white p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div>
+            <div class="relative w-full aspect-[3/4] rounded-[14px] overflow-hidden bg-gray-50 mb-2">
+              <img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400&auto=format&fit=crop&q=80" alt="Güneş Gözlüğü" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2 left-2 bg-[#D97706] text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 rounded">Girne Popüler</span>
+              <button onclick="toggleFav(this)" class="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white text-[#1A1A1A] active:scale-90 transition-all shadow-sm">
+                <i data-lucide="heart" class="w-4 h-4 text-gray-400 pointer-events-none transition-colors"></i>
+              </button>
+              <span class="absolute bottom-2 left-2 bg-[#EF4444] text-white text-[10px] md:text-xs font-black px-2 py-0.5 rounded-md shadow-sm">%25 İndirim</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-[#6F6A64] font-medium px-1">
+              <span>Optic Lab</span>
+              <span class="text-[#E66A3C]">Girne</span>
+            </div>
+            <h3 class="text-xs md:text-sm font-bold text-[#1A1A1A] mt-1 line-clamp-2 min-h-[32px] md:min-h-[40px] px-1 hover:text-[#E66A3C] transition-colors cursor-pointer">
+              Modern Klasik Unisex Siyah Güneş Gözlüğü
+            </h3>
+            <div class="flex items-center space-x-1 mt-1 px-1">
+              <div class="flex text-amber-400">
+                <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+              </div>
+              <span class="text-[10px] font-bold text-[#1A1A1A]">4.5</span>
+              <span class="text-[10px] text-[#6F6A64]">(74)</span>
+            </div>
+          </div>
+          <div>
+            <div class="mt-2 px-1">
+              <span class="text-xs text-[#6F6A64] line-through">1.100 TL</span>
+              <div class="text-sm md:text-base font-extrabold text-[#1A1A1A]">825 TL</div>
+            </div>
+            <div class="text-[9px] md:text-[10px] text-[#10B981] font-semibold flex items-center space-x-1 mt-1 mb-2 px-1">
+              <span>🟢 Stok Güncel</span>
+            </div>
+            <button onclick="addToCart(this, 'Klasik Güneş Gözlüğü')" class="w-full bg-[#1A1A1A] hover:bg-[#E66A3C] text-white text-xs font-bold py-2 px-3 rounded-[14px] flex items-center justify-center transition-all hover:shadow-sm">
+              Ekle +
+            </button>
+          </div>
+        </div>
+
+        <!-- Ürün Kartı 9 (Doğal Sabun) -->
+        <div class="flex-none w-[31vw] min-w-[125px] md:w-[240px] snap-start border border-[#EEE7DE] rounded-[18px] bg-white p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div>
+            <div class="relative w-full aspect-[3/4] rounded-[14px] overflow-hidden bg-gray-50 mb-2">
+              <img src="https://images.unsplash.com/photo-1607006342411-1013441e9757?w=400&auto=format&fit=crop&q=80" alt="Doğal Sabun" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2 left-2 bg-[#10B981] text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 rounded">Yerel Favori</span>
+              <button onclick="toggleFav(this)" class="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white text-[#1A1A1A] active:scale-90 transition-all shadow-sm">
+                <i data-lucide="heart" class="w-4 h-4 text-gray-400 pointer-events-none transition-colors"></i>
+              </button>
+              <span class="absolute bottom-2 left-2 bg-[#EF4444] text-white text-[10px] md:text-xs font-black px-2 py-0.5 rounded-md shadow-sm">%35 İndirim</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-[#6F6A64] font-medium px-1">
+              <span>Karpaz Doğal</span>
+              <span class="text-[#E66A3C]">Karpaz</span>
+            </div>
+            <h3 class="text-xs md:text-sm font-bold text-[#1A1A1A] mt-1 line-clamp-2 min-h-[32px] md:min-h-[40px] px-1 hover:text-[#E66A3C] transition-colors cursor-pointer">
+              %100 Zeytinyağlı El Yapımı Doğal Lavanta Sabunu
+            </h3>
+            <div class="flex items-center space-x-1 mt-1 px-1">
+              <div class="flex text-amber-400">
+                <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+              </div>
+              <span class="text-[10px] font-bold text-[#1A1A1A]">4.9</span>
+              <span class="text-[10px] text-[#6F6A64]">(116)</span>
+            </div>
+          </div>
+          <div>
+            <div class="mt-2 px-1">
+              <span class="text-xs text-[#6F6A64] line-through">190 TL</span>
+              <div class="text-sm md:text-base font-extrabold text-[#1A1A1A]">123 TL</div>
+            </div>
+            <div class="text-[9px] md:text-[10px] text-[#10B981] font-semibold flex items-center space-x-1 mt-1 mb-2 px-1">
+              <span>🏬 Aktif Mağaza</span>
+            </div>
+            <button onclick="addToCart(this, 'Doğal Lavanta Sabunu')" class="w-full bg-[#1A1A1A] hover:bg-[#E66A3C] text-white text-xs font-bold py-2 px-3 rounded-[14px] flex items-center justify-center transition-all hover:shadow-sm">
+              Ekle +
+            </button>
+          </div>
+        </div>
+
+        <!-- Ürün Kartı 10 (Çanta) -->
+        <div class="flex-none w-[31vw] min-w-[125px] md:w-[240px] snap-start border border-[#EEE7DE] rounded-[18px] bg-white p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div>
+            <div class="relative w-full aspect-[3/4] rounded-[14px] overflow-hidden bg-gray-50 mb-2">
+              <img src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&auto=format&fit=crop&q=80" alt="Çanta" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2 left-2 bg-[#DC2626] text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 rounded">Hızlı Tükeniyor</span>
+              <button onclick="toggleFav(this)" class="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white text-[#1A1A1A] active:scale-90 transition-all shadow-sm">
+                <i data-lucide="heart" class="w-4 h-4 text-gray-400 pointer-events-none transition-colors"></i>
+              </button>
+              <span class="absolute bottom-2 left-2 bg-[#EF4444] text-white text-[10px] md:text-xs font-black px-2 py-0.5 rounded-md shadow-sm">%15 İndirim</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-[#6F6A64] font-medium px-1">
+              <span>Boutique Leather</span>
+              <span class="text-[#E66A3C]">Girne</span>
+            </div>
+            <h3 class="text-xs md:text-sm font-bold text-[#1A1A1A] mt-1 line-clamp-2 min-h-[32px] md:min-h-[40px] px-1 hover:text-[#E66A3C] transition-colors cursor-pointer">
+              Tasarım Sürdürülebilir Deri Askılı Kadın Çantası
+            </h3>
+            <div class="flex items-center space-x-1 mt-1 px-1">
+              <div class="flex text-amber-400">
+                <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+              </div>
+              <span class="text-[10px] font-bold text-[#1A1A1A]">4.8</span>
+              <span class="text-[10px] text-[#6F6A64]">(61)</span>
+            </div>
+          </div>
+          <div>
+            <div class="mt-2 px-1">
+              <span class="text-xs text-[#6F6A64] line-through">1.650 TL</span>
+              <div class="text-sm md:text-base font-extrabold text-[#1A1A1A]">1.402 TL</div>
+            </div>
+            <div class="text-[9px] md:text-[10px] text-[#EF4444] font-semibold flex items-center space-x-1 mt-1 mb-2 px-1">
+              <span>🔴 Son 3 Adet</span>
+            </div>
+            <button onclick="addToCart(this, 'Deri Askılı Kadın Çantası')" class="w-full bg-[#1A1A1A] hover:bg-[#E66A3C] text-white text-xs font-bold py-2 px-3 rounded-[14px] flex items-center justify-center transition-all hover:shadow-sm">
+              Ekle +
+            </button>
+          </div>
+        </div>
+
+        <!-- Ürün Kartı 11 (Parfüm) -->
+        <div class="flex-none w-[31vw] min-w-[125px] md:w-[240px] snap-start border border-[#EEE7DE] rounded-[18px] bg-white p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div>
+            <div class="relative w-full aspect-[3/4] rounded-[14px] overflow-hidden bg-gray-50 mb-2">
+              <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&auto=format&fit=crop&q=80" alt="Parfüm" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2 left-2 bg-[#E66A3C] text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 rounded">Adayol Seçimi</span>
+              <button onclick="toggleFav(this)" class="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white text-[#1A1A1A] active:scale-90 transition-all shadow-sm">
+                <i data-lucide="heart" class="w-4 h-4 text-gray-400 pointer-events-none transition-colors"></i>
+              </button>
+              <span class="absolute bottom-2 left-2 bg-[#EF4444] text-white text-[10px] md:text-xs font-black px-2 py-0.5 rounded-md shadow-sm">%20 İndirim</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-[#6F6A64] font-medium px-1">
+              <span>Scent Bar</span>
+              <span class="text-[#E66A3C]">Lefkoşa</span>
+            </div>
+            <h3 class="text-xs md:text-sm font-bold text-[#1A1A1A] mt-1 line-clamp-2 min-h-[32px] md:min-h-[40px] px-1 hover:text-[#E66A3C] transition-colors cursor-pointer">
+              L'Amour Intense Oryantal & Odunsu Erkek Parfümü
+            </h3>
+            <div class="flex items-center space-x-1 mt-1 px-1">
+              <div class="flex text-amber-400">
+                <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+              </div>
+              <span class="text-[10px] font-bold text-[#1A1A1A]">4.8</span>
+              <span class="text-[10px] text-[#6F6A64]">(95)</span>
+            </div>
+          </div>
+          <div>
+            <div class="mt-2 px-1">
+              <span class="text-xs text-[#6F6A64] line-through">1.950 TL</span>
+              <div class="text-sm md:text-base font-extrabold text-[#1A1A1A]">1.560 TL</div>
+            </div>
+            <div class="text-[9px] md:text-[10px] text-[#10B981] font-semibold flex items-center space-x-1 mt-1 mb-2 px-1">
+              <span>⚡ Bugün Güncellendi</span>
+            </div>
+            <button onclick="addToCart(this, 'L\'Amour Intense Parfüm')" class="w-full bg-[#1A1A1A] hover:bg-[#E66A3C] text-white text-xs font-bold py-2 px-3 rounded-[14px] flex items-center justify-center transition-all hover:shadow-sm">
+              Ekle +
+            </button>
+          </div>
+        </div>
+
+        <!-- Ürün Kartı 12 (Seramik Tabak) -->
+        <div class="flex-none w-[31vw] min-w-[125px] md:w-[240px] snap-start border border-[#EEE7DE] rounded-[18px] bg-white p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div>
+            <div class="relative w-full aspect-[3/4] rounded-[14px] overflow-hidden bg-gray-50 mb-2">
+              <img src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=400&auto=format&fit=crop&q=80" alt="Seramik Tabak" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2 left-2 bg-[#7C3AED] text-white text-[8px] md:text-[9px] font-bold px-1.5 py-0.5 rounded">Lefkoşa Trend</span>
+              <button onclick="toggleFav(this)" class="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white text-[#1A1A1A] active:scale-90 transition-all shadow-sm">
+                <i data-lucide="heart" class="w-4 h-4 text-gray-400 pointer-events-none transition-colors"></i>
+              </button>
+              <span class="absolute bottom-2 left-2 bg-[#EF4444] text-white text-[10px] md:text-xs font-black px-2 py-0.5 rounded-md shadow-sm">%20 İndirim</span>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-[#6F6A64] font-medium px-1">
+              <span>Kıbrıs Çömlek</span>
+              <span class="text-[#E66A3C]">Mağusa</span>
+            </div>
+            <h3 class="text-xs md:text-sm font-bold text-[#1A1A1A] mt-1 line-clamp-2 min-h-[32px] md:min-h-[40px] px-1 hover:text-[#E66A3C] transition-colors cursor-pointer">
+              Sırlı El Yapımı Toprak Seramik Servis Tabağı
+            </h3>
+            <div class="flex items-center space-x-1 mt-1 px-1">
+              <div class="flex text-amber-400">
+                <i data-lucide="star" class="w-3 h-3 fill-current"></i>
+              </div>
+              <span class="text-[10px] font-bold text-[#1A1A1A]">4.7</span>
+              <span class="text-[10px] text-[#6F6A64]">(34)</span>
+            </div>
+          </div>
+          <div>
+            <div class="mt-2 px-1">
+              <span class="text-xs text-[#6F6A64] line-through">380 TL</span>
+              <div class="text-sm md:text-base font-extrabold text-[#1A1A1A]">304 TL</div>
+            </div>
+            <div class="text-[9px] md:text-[10px] text-[#10B981] font-semibold flex items-center space-x-1 mt-1 mb-2 px-1">
+              <span>🟢 Stok Güncel</span>
+            </div>
+            <button onclick="addToCart(this, 'Seramik Servis Tabağı')" class="w-full bg-[#1A1A1A] hover:bg-[#E66A3C] text-white text-xs font-bold py-2 px-3 rounded-[14px] flex items-center justify-center transition-all hover:shadow-sm">
+              Ekle +
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- BİLDİRİM / TOAST SİSTEMİ (Tarayıcı alert'i yerine modern ve şık bildirimler) -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-[#1A1A1A] text-white px-5 py-3.5 rounded-2xl shadow-xl flex items-center space-x-3 transition-all duration-300 translate-y-20 opacity-0 z-50 max-w-sm">
+    <div class="w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center shrink-0">
+      <i data-lucide="check" class="w-4 h-4 text-white"></i>
+    </div>
+    <span id="toastMessage" class="text-xs font-semibold tracking-wide">Ürün başarıyla sepete eklendi!</span>
+  </div>
+
+  <!-- SEPET VE FAVORİ DETAY MODALLARI (Demo amaçlı mini paneller) -->
+  <div id="cartModal" class="fixed inset-0 bg-[#1A1A1A]/40 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[24px] max-w-md w-full p-6 shadow-2xl relative animate-pulse-soft">
+      <button onclick="toggleCartModal()" class="absolute top-4 right-4 text-[#6F6A64] hover:text-[#1A1A1A] transition-colors">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+      <h3 class="text-lg font-extrabold text-[#1A1A1A] mb-4 flex items-center gap-2">
+        <i data-lucide="shopping-bag" class="w-6 h-6 text-[#E66A3C]"></i> Sepetiniz
+      </h3>
+      <div id="cartItemsList" class="space-y-3 my-4 max-h-[250px] overflow-y-auto scrollbar-none">
+        <p class="text-xs text-[#6F6A64] text-center py-6">Henüz ürün eklenmedi.</p>
+      </div>
+      <div class="border-t border-[#EEE7DE] pt-4 flex items-center justify-between">
+        <span class="text-sm font-semibold text-[#6F6A64]">Toplam:</span>
+        <span id="cartTotalPrice" class="text-lg font-black text-[#1A1A1A]">0 TL</span>
+      </div>
+      <button onclick="toggleCartModal()" class="w-full bg-[#E66A3C] hover:bg-[#D1592D] text-white font-bold py-3.5 rounded-[16px] text-xs mt-4 transition-all">
+        Alışverişi Tamamla
+      </button>
+    </div>
+  </div>
+
+  <div id="favModal" class="fixed inset-0 bg-[#1A1A1A]/40 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[24px] max-w-md w-full p-6 shadow-2xl relative">
+      <button onclick="toggleFavModal()" class="absolute top-4 right-4 text-[#6F6A64] hover:text-[#1A1A1A] transition-colors">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+      <h3 class="text-lg font-extrabold text-[#1A1A1A] mb-4 flex items-center gap-2">
+        <i data-lucide="heart" class="w-6 h-6 text-[#EF4444] fill-[#EF4444]"></i> Favorilerim
+      </h3>
+      <div id="favItemsList" class="space-y-3 my-4 max-h-[250px] overflow-y-auto scrollbar-none">
+        <p class="text-xs text-[#6F6A64] text-center py-6">Favorilediğiniz ürün bulunmuyor.</p>
+      </div>
+      <button onclick="toggleFavModal()" class="w-full bg-[#1A1A1A] hover:bg-[#E66A3C] text-white font-bold py-3.5 rounded-[16px] text-xs mt-2 transition-all">
+        Kapat
+      </button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT ETKİLEŞİMLERİ -->
+  <script>
+    // Lucide ikonlarının başlatılması
+    lucide.createIcons();
+
+    // 1. Canlı Bar Metin Rotasyonu
+    const liveTexts = [
+      "Son 10 dakikada Girne’de 14 sipariş paketlendi",
+      "Bugün 267 sipariş teslim edildi",
+      "35 aktif mağaza şu anda sipariş alıyor",
+      "KKTC güvencesiyle yerel alışveriş",
+      "Lefkoşa’da 22 ürün bugün stoklandı"
+    ];
+    let currentTextIndex = 0;
+    const liveTextEl = document.getElementById('liveText');
+
+    function rotateLiveText() {
+      liveTextEl.classList.add('fade-out');
+      setTimeout(() => {
+        currentTextIndex = (currentTextIndex + 1) % liveTexts.length;
+        liveTextEl.textContent = liveTexts[currentTextIndex];
+        liveTextEl.classList.remove('fade-out');
+        liveTextEl.classList.add('fade-in');
+      }, 500);
+    }
+    // İlk metni koyup rotasyonu başlatma
+    liveTextEl.textContent = liveTexts[0];
+    setInterval(rotateLiveText, 3000);
+
+
+    // 2. Flash İndirimler Geri Sayım Sayacı (Sürekli Güncel Kalan 02:43:53 Temelli)
+    let totalSeconds = (2 * 3600) + (43 * 60) + 53;
+    const countdownEl = document.getElementById('countdown');
+
+    function updateCountdown() {
+      if (totalSeconds <= 0) {
+        totalSeconds = (3 * 3600); // Süre bitince yeniden 3 saat kurar
+      }
+      totalSeconds--;
+      const hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+      const mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+      const secs = (totalSeconds % 60).toString().padStart(2, '0');
+      countdownEl.textContent = `${hrs}:${mins}:${secs}`;
+    }
+    setInterval(updateCountdown, 1000);
+
+
+    // 3. Carousel Manuel Kaydırma Mekanizması
+    const carousel = document.getElementById('productCarousel');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    if (prevBtn && nextBtn && carousel) {
+      prevBtn.addEventListener('click', () => {
+        const cardWidth = carousel.querySelector('.snap-start').offsetWidth + 16; // Kart genişliği + gap
+        carousel.scrollBy({ left: -cardWidth * 2, behavior: 'smooth' });
+      });
+
+      nextBtn.addEventListener('click', () => {
+        const cardWidth = carousel.querySelector('.snap-start').offsetWidth + 16;
+        carousel.scrollBy({ left: cardWidth * 2, behavior: 'smooth' });
+      });
+    }
+
+
+    // 4. Sepet & Favori Yönetimi ve Toast Bildirimi
+    let cart = [];
+    let favorites = [];
+
+    // Modern Bildirim Gösterimi
+    function showToast(message, isSuccess = true) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMessage');
+      toastMsg.textContent = message;
+      
+      // Renk yapılandırması
+      const iconContainer = toast.querySelector('div');
+      if (isSuccess) {
+        iconContainer.className = "w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center shrink-0";
+        iconContainer.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-white"></i>';
+      } else {
+        iconContainer.className = "w-6 h-6 rounded-full bg-[#EF4444] flex items-center justify-center shrink-0";
+        iconContainer.innerHTML = '<i data-lucide="info" class="w-4 h-4 text-white"></i>';
+      }
+      lucide.createIcons();
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    // Sepete Ekleme Fonksiyonu
+    function addToCart(buttonEl, productName) {
+      // Sepet listesine ekle
+      cart.push({ id: Date.now(), name: productName, price: 150 }); // Demo sabit fiyat
+      updateCartUI();
+      showToast(`${productName} başarıyla sepetinize eklendi!`);
+    }
+
+    // Sepet Arayüzünün Güncellenmesi
+    function updateCartUI() {
+      const cartCountEl = document.getElementById('cartCount');
+      cartCountEl.textContent = cart.length;
+
+      const cartList = document.getElementById('cartItemsList');
+      if (cart.length === 0) {
+        cartList.innerHTML = '<p class="text-xs text-[#6F6A64] text-center py-6">Henüz ürün eklenmedi.</p>';
+        document.getElementById('cartTotalPrice').textContent = "0 TL";
+        return;
+      }
+
+      let listHTML = '';
+      let total = 0;
+      cart.forEach((item, index) => {
+        listHTML += `
+          <div class="flex items-center justify-between bg-[#FAF8F4] p-3 rounded-xl border border-[#EEE7DE]">
+            <div>
+              <p class="text-xs font-bold text-[#1A1A1A]">${item.name}</p>
+              <p class="text-[10px] text-[#6F6A64]">Adet: 1</p>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="text-xs font-extrabold text-[#1A1A1A]">${item.price} TL</span>
+              <button onclick="removeFromCart(${index})" class="text-[#EF4444] hover:text-[#DC2626]">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        `;
+        total += item.price;
+      });
+      cartList.innerHTML = listHTML;
+      document.getElementById('cartTotalPrice').textContent = `${total} TL`;
+      lucide.createIcons();
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      updateCartUI();
+      showToast("Ürün sepetten çıkarıldı.", false);
+    }
+
+    // Favori Ekle/Çıkar Fonksiyonu (Kartlardaki Kalp Simgeleri)
+    function toggleFav(buttonEl) {
+      const icon = buttonEl.querySelector('svg');
+      const isFav = icon.classList.contains('fill-current');
+      const card = buttonEl.closest('.group');
+      const title = card.querySelector('h3').textContent.trim();
+
+      if (!isFav) {
+        // Favoriye Ekle
+        icon.classList.remove('text-gray-400');
+        icon.classList.add('text-[#EF4444]', 'fill-current');
+        favorites.push({ id: title, name: title });
+        showToast("Ürün favorilerinize eklendi!");
+      } else {
+        // Favoriden Çıkar
+        icon.classList.remove('text-[#EF4444]', 'fill-current');
+        icon.classList.add('text-gray-400');
+        favorites = favorites.filter(item => item.id !== title);
+        showToast("Ürün favorilerinizden kaldırıldı.", false);
+      }
+      updateFavUI();
+    }
+
+    function updateFavUI() {
+      const favCount = document.getElementById('favCount');
+      favCount.textContent = favorites.length;
+      if (favorites.length > 0) {
+        favCount.classList.remove('opacity-0');
+      } else {
+        favCount.classList.add('opacity-0');
+      }
+
+      const favList = document.getElementById('favItemsList');
+      if (favorites.length === 0) {
+        favList.innerHTML = '<p class="text-xs text-[#6F6A64] text-center py-6">Favorilediğiniz ürün bulunmuyor.</p>';
+        return;
+      }
+
+      let listHTML = '';
+      favorites.forEach((item) => {
+        listHTML += `
+          <div class="flex items-center justify-between bg-[#FAF8F4] p-3 rounded-xl border border-[#EEE7DE]">
+            <p class="text-xs font-bold text-[#1A1A1A] line-clamp-1 flex-1 pr-3">${item.name}</p>
+            <button onclick="removeSpecificFav('${item.id}')" class="text-[#EF4444] hover:text-[#DC2626] shrink-0">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        `;
+      });
+      favList.innerHTML = listHTML;
+      lucide.createIcons();
+    }
+
+    function removeSpecificFav(id) {
+      favorites = favorites.filter(item => item.id !== id);
+      // Carousel'deki ilgili kalbin rengini temizle
+      const cards = document.querySelectorAll('.group');
+      cards.forEach(card => {
+        const title = card.querySelector('h3').textContent.trim();
+        if (title === id) {
+          const heartIcon = card.querySelector('button[onclick="toggleFav(this)"] svg');
+          if (heartIcon) {
+            heartIcon.classList.remove('text-[#EF4444]', 'fill-current');
+            heartIcon.classList.add('text-gray-400');
+          }
+        }
+      });
+      updateFavUI();
+      showToast("Ürün favorilerden kaldırıldı.", false);
+    }
+
+    // Mini Modalları Açıp Kapatma Fonksiyonları
+    function toggleCartModal() {
+      const modal = document.getElementById('cartModal');
+      modal.classList.toggle('hidden');
+      modal.classList.toggle('flex');
+    }
+
+    function toggleFavModal() {
+      const modal = document.getElementById('favModal');
+      modal.classList.toggle('hidden');
+      modal.classList.toggle('flex');
+    }
+  </script>
+</body>
+</html>
