@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>adayol | KKTC'nin En Büyük Yerel Pazaryeri</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            terracotta: {
+              DEFAULT: '#E96B3C',
+              dark: '#D55627',
+              light: '#FAF2EE',
+            },
+            ivory: '#FAF7F3',
+            olive: '#2F8F5B',
+            charcoal: '#111111',
+            border: '#EFE3DA',
+            muted: '#6F6A64',
+            blue: '#3D7EA6',
+            amber: '#E1A33A',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts: DM Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #FAF7F3;
+      color: #111111;
+      overflow-x: hidden;
+    }
+    .logo-font {
+      font-family: 'DM Sans', sans-serif;
+    }
+    /* Custom scrollbar override */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Card Micro-interactions */
+    .product-card {
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -10px rgba(233, 107, 60, 0.15);
+      border-color: #E96B3C;
+    }
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.1); }
+    }
+    .pulse-dot {
+      animation: pulse-subtle 1.8s infinite ease-in-out;
+    }
+    /* Toast anim */
+    @keyframes slide-up {
+      from { transform: translateY(100%) scale(0.95); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    .toast-anim {
+      animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+  <!-- 1. ÜST CANLI BAR -->
+  <div class="bg-[#111111] text-white text-[11px] py-1.5 px-4 sticky top-0 z-50 border-b border-white/5 shadow-sm">
+    <div class="max-w-[1440px] mx-auto flex items-center justify-between">
+      <div id="live-carousel-container" class="flex items-center gap-2 transition-opacity duration-300">
+        <span class="inline-flex items-center justify-center w-2 h-2 rounded-full bg-red-500 pulse-dot"></span>
+        <span id="live-activity-text" class="font-semibold tracking-wide">
+          🔴 CANLI Girne’de 18 kişi şu an alışveriş yapıyor!
+        </span>
+      </div>
+      <div class="hidden lg:flex items-center gap-5 text-[11px] text-gray-300 font-medium">
+        <span class="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded">
+          🚀 <strong id="live-delivered-orders">248</strong> Sipariş Bugün Teslim Edildi
+        </span>
+        <span class="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded">
+          🏪 <strong id="active-stores-count">36</strong> Aktif Mağaza
+        </span>
+        <span class="flex items-center gap-1 text-emerald-400">
+          <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full pulse-dot"></span> KKTC Güvencesi
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. HEADER -->
+  <header class="bg-white border-b border-[#EFE3DA] sticky top-[26px] z-40 px-4 py-3 shadow-xs">
+    <div class="max-w-[1440px] mx-auto flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo & Store Gate -->
+      <div class="flex items-center gap-4 shrink-0">
+        <a href="#" class="logo-font text-2xl font-extrabold tracking-tight select-none flex items-center">
+          <span class="text-charcoal">aday</span><span class="text-terracotta">o</span><span class="text-charcoal">l</span><span class="text-terracotta text-3xl leading-none">.</span>
+        </a>
+
+        <!-- Store Access Trigger -->
+        <a href="#store-gate" onclick="toastMessage('Adayol satıcı portalına yönlendiriliyorsunuz...')" class="hidden xl:flex items-center gap-1 text-xs font-bold text-olive hover:text-white hover:bg-olive transition-all bg-olive/10 px-3 py-1.5 rounded-full border border-olive/20">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+          </svg>
+          Mağaza Girişi
+        </a>
+      </div>
+
+      <!-- Wide Search Engine -->
+      <div class="flex-1 max-w-2xl relative">
+        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-muted">
+          <svg class="w-4.5 h-4.5 text-muted" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input 
+          type="text" 
+          id="search-input"
+          placeholder="Ürün, mağaza veya kategori ara..." 
+          class="w-full pl-11 pr-24 py-2 bg-ivory border border-[#EFE3DA] rounded-full text-xs font-semibold focus:outline-none focus:border-terracotta focus:bg-white transition-all text-charcoal"
+        >
+        <button id="clear-search" class="hidden absolute inset-y-0 right-20 px-2 flex items-center text-muted hover:text-charcoal transition-colors">
+          ✕
+        </button>
+        <button id="search-btn" class="absolute right-1 top-1/2 -translate-y-1/2 bg-terracotta hover:bg-terracotta-dark text-white text-xs px-5 py-1.5 rounded-full font-bold transition-all">
+          Ara
+        </button>
+      </div>
+
+      <!-- Action Panel -->
+      <div class="flex items-center gap-3 shrink-0 text-xs font-bold">
+        <button onclick="toastMessage('Tüm aktif adalı mağazalar listeleniyor...')" class="hidden md:flex items-center gap-1 text-charcoal hover:text-terracotta transition-colors px-2 py-1.5 rounded">
+          🏪 Aktif Mağazalar
+        </button>
+
+        <button onclick="toggleFavoritesPanel()" class="flex items-center gap-1 text-charcoal hover:text-terracotta transition-colors px-2 py-1.5 rounded relative">
+          ❤️ Favorilerim
+          <span id="fav-counter" class="absolute -top-1 -right-1.5 bg-terracotta text-white text-[9px] w-4.5 h-4.5 flex items-center justify-center rounded-full border-2 border-white font-extrabold">0</span>
+        </button>
+
+        <!-- Cart Box Button -->
+        <button onclick="toggleCartPanel()" class="flex items-center gap-1.5 text-white bg-charcoal hover:bg-terracotta transition-all px-4 py-2 rounded-full shadow-sm relative">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+          </svg>
+          Sepetim
+          <span id="cart-counter" class="bg-terracotta text-white text-[9px] w-4.5 h-4.5 flex items-center justify-center rounded-full border border-charcoal font-black">0</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- 3. KATEGORİ CHIP MENÜSÜ -->
+  <div class="bg-white border-b border-[#EFE3DA] py-2 px-4 sticky top-[77px] z-30 shadow-xs">
+    <div class="max-w-[1440px] mx-auto flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth" id="categories-container">
+      <!-- Generated via JS for ultimate flexibility -->
+    </div>
+  </div>
+
+  <!-- 4. ÜST BİLGİ KARTLARI -->
+  <section class="max-w-[1440px] mx-auto w-full px-4 pt-4">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-2.5">
+      
+      <div class="bg-white border border-[#EFE3DA] rounded-lg p-2.5 flex items-start gap-2">
+        <span class="text-lg text-olive">🚚</span>
+        <div class="min-w-0">
+          <h4 class="text-[11px] font-extrabold text-charcoal uppercase tracking-wider">BUGÜN TESLİMAT</h4>
+          <p class="text-[10px] text-muted line-clamp-2 leading-snug">Saat 16:00’ya kadar sipariş ver, aynı gün gelsin!</p>
+        </div>
+      </div>
+
+      <div class="bg-white border border-[#EFE3DA] rounded-lg p-2.5 flex items-start gap-2">
+        <span class="text-lg text-terracotta">📦</span>
+        <div class="min-w-0">
+          <h4 class="text-[11px] font-extrabold text-charcoal uppercase tracking-wider">EXPRESS TESLİMAT BEDAVA</h4>
+          <p class="text-[10px] text-muted line-clamp-2 leading-snug">Girne, Lefkoşa, Mağusa 300 TL üzeri tüm siparişlerde!</p>
+        </div>
+      </div>
+
+      <div class="bg-white border border-[#EFE3DA] rounded-lg p-2.5 flex items-start gap-2">
+        <span class="text-lg text-amber">🌼</span>
+        <div class="min-w-0">
+          <h4 class="text-[11px] font-extrabold text-charcoal uppercase tracking-wider">%100 YEREL ÜRETİM</h4>
+          <p class="text-[10px] text-muted line-clamp-2 leading-snug">Ada’mızın en iyi üreticileri doğal ürünleriyle yanınızda!</p>
+        </div>
+      </div>
+
+      <div class="bg-white border border-[#EFE3DA] rounded-lg p-2.5 flex items-start gap-2">
+        <span class="text-lg text-blue">🛡️</span>
+        <div class="min-w-0">
+          <h4 class="text-[11px] font-extrabold text-charcoal uppercase tracking-wider">GÜVENLİ ALIŞVERİŞ</h4>
+          <p class="text-[10px] text-muted line-clamp-2 leading-snug">KKTC güvencesi ile ödeme ve kolay iade garantisi!</p>
+        </div>
+      </div>
+
+      <!-- Real-time Order Ticker Card -->
+      <div class="bg-terracotta-light border border-[#E96B3C]/30 rounded-lg p-2.5 flex items-start gap-2 col-span-2 md:col-span-1">
+        <span class="text-lg text-terracotta pulse-dot">🛍️</span>
+        <div class="min-w-0 flex-1">
+          <h4 class="text-[11px] font-extrabold text-terracotta uppercase tracking-wider">Canlı Siparişler</h4>
+          <p id="live-purchase-card-text" class="text-[10px] text-charcoal font-semibold truncate leading-snug">Az önce Girne'den Taze Zeytinyağı siparişi edildi</p>
+          <span id="live-purchase-card-time" class="text-[9px] text-muted">2 dk önce</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MAIN DENSE MARKETPLACE CONTEXT -->
+  <main class="max-w-[1440px] mx-auto px-4 py-5 space-y-8 flex-1 w-full">
+
+    <!-- 5. FLASH İNDİRİMLER BÖLÜMÜ -->
+    <section class="space-y-2.5" id="flash-sales-anchor">
+      <div class="flex items-center justify-between border-b border-[#EFE3DA] pb-1.5">
+        <div class="flex items-center gap-2">
+          <h2 class="text-[15px] font-extrabold text-[#111111] uppercase tracking-tight">Flash İndirimler</h2>
+          <span class="flex items-center gap-1 bg-terracotta text-white text-[11px] px-2.5 py-0.5 rounded-full font-mono font-bold" id="countdown-timer">
+            ⏱ Yükleniyor...
+          </span>
+        </div>
+        <button onclick="toastMessage('Tüm flaş indirimli ürünler listeleniyor...')" class="text-xs font-extrabold text-terracotta hover:underline">Tümünü Gör</button>
+      </div>
+      
+      <!-- 8-Product Dense Grid Row -->
+      <div id="flash-grid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-[11px]">
+        <!-- Filled Dynamically via JavaScript -->
+      </div>
+    </section>
+
+    <!-- 6. KAMPANYA BANNERLARI (4 COMPACT BANNER ROW) -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      
+      <!-- Banner 1 -->
+      <div class="bg-[#F6EFEA] border border-[#EFE3DA] rounded-xl p-3.5 flex items-center justify-between relative overflow-hidden group hover:shadow-xs transition-shadow">
+        <div class="space-y-1.5 z-10 max-w-[60%]">
+          <span class="bg-terracotta text-white text-[9px] px-1.5 py-0.5 rounded font-bold uppercase">Yeni</span>
+          <h3 class="text-xs font-extrabold text-charcoal leading-snug">En Yeni Ürünleri Keşfedin!</h3>
+          <button onclick="toastMessage('En yeni gelen ürün kategorisine yönlendiriliyorsunuz...')" class="text-[10px] font-extrabold text-terracotta hover:underline flex items-center gap-0.5">
+            Keşfet <span class="group-hover:translate-x-1 transition-transform inline-block">→</span>
+          </button>
+        </div>
+        <img class="w-20 h-20 object-contain drop-shadow" src="https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=150&auto=format&fit=crop&q=60" alt="Yeni Gelenler">
+      </div>
+
+      <!-- Banner 2 -->
+      <div class="bg-[#EEF4F0] border border-[#EFE3DA] rounded-xl p-3.5 flex items-center justify-between relative overflow-hidden group hover:shadow-xs transition-shadow">
+        <div class="space-y-1.5 z-10 max-w-[60%]">
+          <span class="bg-olive text-white text-[9px] px-1.5 py-0.5 rounded font-bold uppercase">Best Seller</span>
+          <h3 class="text-xs font-extrabold text-charcoal leading-snug">Bu Hafta En Popüler Ürünler!</h3>
+          <button onclick="toastMessage('En çok satanlar listesine yönlendiriliyorsunuz...')" class="text-[10px] font-extrabold text-olive hover:underline flex items-center gap-0.5">
+            Göster <span class="group-hover:translate-x-1 transition-transform inline-block">→</span>
+          </button>
+        </div>
+        <img class="w-20 h-20 object-contain drop-shadow" src="https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=150&auto=format&fit=crop&q=60" alt="En Çok Satanlar">
+      </div>
+
+      <!-- Banner 3 -->
+      <div class="bg-[#F5F1EE] border border-[#EFE3DA] rounded-xl p-3.5 flex items-center justify-between relative overflow-hidden group hover:shadow-xs transition-shadow">
+        <div class="space-y-1.5 z-10 max-w-[60%]">
+          <span class="bg-[#3D7EA6] text-white text-[9px] px-1.5 py-0.5 rounded font-bold uppercase">Hediye</span>
+          <h3 class="text-xs font-extrabold text-charcoal leading-snug">Özel Günler İçin En Güzel Hediyeler!</h3>
+          <button onclick="toastMessage('Hediye kategorisine yönlendiriliyorsunuz...')" class="text-[10px] font-extrabold text-blue hover:underline flex items-center gap-0.5">
+            Keşfet <span class="group-hover:translate-x-1 transition-transform inline-block">→</span>
+          </button>
+        </div>
+        <img class="w-20 h-20 object-contain drop-shadow" src="https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=150&auto=format&fit=crop&q=60" alt="Hediyelik">
+      </div>
+
+      <!-- Banner 4 -->
+      <div class="bg-[#FBF8F5] border border-[#EFE3DA] rounded-xl p-3.5 flex items-center justify-between relative overflow-hidden group hover:shadow-xs transition-shadow">
+        <div class="space-y-1.5 z-10 max-w-[60%]">
+          <span class="bg-[#E1A33A] text-white text-[9px] px-1.5 py-0.5 rounded font-bold uppercase">Kampanya</span>
+          <h3 class="text-xs font-extrabold text-charcoal leading-snug">Kaçırılmayacak Fırsatlar Seni Bekliyor!</h3>
+          <button onclick="toastMessage('Aktif kampanyalar listesine yönlendiriliyorsunuz...')" class="text-[10px] font-extrabold text-amber hover:underline flex items-center gap-0.5">
+            Fırsatları Gör <span class="group-hover:translate-x-1 transition-transform inline-block">→</span>
+          </button>
+        </div>
+        <img class="w-20 h-20 object-contain drop-shadow" src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=150&auto=format&fit=crop&q=60" alt="Kampanyalar">
+      </div>
+
+    </section>
+
+    <!-- 7. ADA'DA TREND OLANLAR (12 COMPACT MINI CARDS ROW) -->
+    <section class="space-y-2.5" id="trend-sales-anchor">
+      <div class="flex items-center justify-between border-b border-[#EFE3DA] pb-1.5">
+        <h2 class="text-[15px] font-extrabold text-[#111111] uppercase tracking-tight">Ada'da Trend Olanlar</h2>
+        <button onclick="toastMessage('Tüm trend olan ürünler listeleniyor...')" class="text-xs font-extrabold text-terracotta hover:underline">Tümünü Gör</button>
+      </div>
+      
+      <!-- 12-Mini Product Row -->
+      <div id="trend-grid" class="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-12 gap-2">
+        <!-- Filled Dynamically via JavaScript with smaller cards -->
+      </div>
+    </section>
+
+    <!-- 8. BUGÜN TESLİMAT EDİLEBİLECEK ÜRÜNLER (CAROUSEL) -->
+    <section class="space-y-2.5" id="today-delivery-anchor">
+      <div class="flex items-center justify-between border-b border-[#EFE3DA] pb-1.5">
+        <h2 class="text-[15px] font-extrabold text-[#111111] uppercase tracking-tight">Bugün Teslim Edilebilecek Ürünler</h2>
+        <div class="flex items-center gap-2">
+          <label for="location-select" class="text-[11px] text-muted font-bold">Konumuna Göre Filtrele:</label>
+          <select id="location-select" onchange="filterLocationProducts(this.value)" class="text-[11px] font-bold bg-white border border-[#EFE3DA] px-2 py-1 rounded text-charcoal focus:outline-none focus:border-terracotta">
+            <option value="Tümü">📍 Tüm Ada</option>
+            <option value="Girne" selected>📍 Girne</option>
+            <option value="Lefkoşa">📍 Lefkoşa</option>
+            <option value="Mağusa">📍 Mağusa</option>
+            <option value="Güzelyurt">📍 Güzelyurt</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Carousel Display wrapper with 12 items side by side -->
+      <div class="relative group">
+        <button onclick="scrollContainer('today-carousel', -1)" class="absolute left-1 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/95 border border-border shadow flex items-center justify-center text-charcoal hover:text-terracotta transition-colors">
+          ‹
+        </button>
+        <div id="today-carousel" class="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 px-1">
+          <!-- Filled Dynamically via JS with mini items -->
+        </div>
+        <button onclick="scrollContainer('today-carousel', 1)" class="absolute right-1 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/95 border border-border shadow flex items-center justify-center text-charcoal hover:text-terracotta transition-colors">
+          ›
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-[#EFE3DA] mt-12 py-10 px-4">
+    <div class="max-w-[1440px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-xs text-muted">
+      
+      <div class="space-y-3">
+        <div class="logo-font text-2xl font-extrabold tracking-tight">
+          <span class="text-charcoal">aday</span><span class="text-terracotta">o</span><span class="text-charcoal">l</span><span class="text-terracotta text-3xl leading-none">.</span>
+        </div>
+        <p class="leading-relaxed">
+          Kuzey Kıbrıs Türk Cumhuriyeti'ndeki yerel üreticileri, mağazaları ve ithalatçıları tek bir e-ticaret altyapısında toplayan güvenli pazaryeridir.
+        </p>
+        <span class="inline-flex items-center gap-1 text-[11px] text-olive font-bold">
+          <span class="w-1.5 h-1.5 bg-olive rounded-full pulse-dot"></span> Lefkoşa Merkez Ofisi Çevrimiçi
+        </span>
+      </div>
+
+      <div class="space-y-2">
+        <h4 class="font-extrabold text-charcoal uppercase tracking-wider text-[11px]">Müşteri Çözümleri</h4>
+        <ul class="space-y-1.5">
+          <li><a href="#" class="hover:text-terracotta transition-colors">Nasıl Alışveriş Yapılır?</a></li>
+          <li><a href="#" class="hover:text-terracotta transition-colors">Aynı Gün Teslimat Bölgeleri</a></li>
+          <li><a href="#" class="hover:text-terracotta transition-colors">Kolay İade & Değişim Şartları</a></li>
+          <li><a href="#" class="hover:text-terracotta transition-colors">7/24 Kıbrıs Müşteri Destek</a></li>
+        </ul>
+      </div>
+
+      <div class="space-y-2">
+        <h4 class="font-extrabold text-charcoal uppercase tracking-wider text-[11px]">Satıcı Çözümleri</h4>
+        <ul class="space-y-1.5">
+          <li><a href="#" class="hover:text-terracotta transition-colors">Satıcı Başvuru Formu</a></li>
+          <li><a href="#" class="hover:text-terracotta transition-colors">Mağaza Yönetim Altyapısı</a></li>
+          <li><a href="#" class="hover:text-terracotta transition-colors">Kurye Dağıtım Ortaklığı</a></li>
+          <li><a href="#" class="hover:text-terracotta transition-colors">Yerel Kadın Girişimci Desteği</a></li>
+        </ul>
+      </div>
+
+      <div class="space-y-3">
+        <h4 class="font-extrabold text-charcoal uppercase tracking-wider text-[11px]">KKTC Güven & Yerel Sermaye</h4>
+        <p class="leading-relaxed">
+          Kuzey Kıbrıs bankaları ve güvenli 3D Secure sistemleriyle korunan altyapı. Tüm işlemler KKTC yasalarına tabidir.
+        </p>
+        <div class="flex flex-wrap gap-1">
+          <span class="px-2 py-1 bg-ivory border border-border rounded text-[9px] font-bold">3D SECURE</span>
+          <span class="px-2 py-1 bg-ivory border border-border rounded text-[9px] font-bold">KIBRIS BANKALARI</span>
+          <span class="px-2 py-1 bg-ivory border border-border rounded text-[9px] font-bold">%100 YEREL</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="max-w-[1440px] mx-auto border-t border-border mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
+      <p>&copy; 2026 adayol.com. Tüm hakları saklıdır. Kuzey Kıbrıs'ın Lider Pazaryeri Platformu.</p>
+      <div class="flex gap-4">
+        <a href="#" class="hover:underline">Gizlilik Sözleşmesi</a>
+        <a href="#" class="hover:underline">Kullanım Şartları</a>
+        <a href="#" class="hover:underline">Mesafeli Satış Sözleşmesi</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- DYNAMIC DRAWER PANELS -->
+
+  <!-- Sepet Yan Panel -->
+  <div id="cart-panel" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 transition-opacity hidden">
+    <div class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col">
+      <div class="p-4 border-b border-border flex items-center justify-between bg-ivory">
+        <h3 class="font-bold text-charcoal flex items-center gap-2">
+          🛒 Alışveriş Sepetiniz
+        </h3>
+        <button onclick="toggleCartPanel()" class="p-2 text-muted hover:text-charcoal font-bold text-lg">
+          ✕
+        </button>
+      </div>
+
+      <div id="cart-items" class="flex-1 overflow-y-auto p-4 space-y-3">
+        <p class="text-xs text-center text-muted py-8">Sepetinizde ürün bulunmamaktadır.</p>
+      </div>
+
+      <div class="p-4 border-t border-border bg-ivory space-y-3">
+        <div class="flex items-center justify-between text-xs font-bold">
+          <span>Toplam Tutar:</span>
+          <span id="cart-total-price" class="text-terracotta text-lg font-black">₺0.00</span>
+        </div>
+        <button onclick="checkoutMock()" class="w-full bg-terracotta hover:bg-terracotta-dark text-white text-xs py-3 rounded-lg font-bold transition-all shadow-md">
+          Ödemeye Geç (Güvenli KKTC Ödeme)
+        </button>
+        <p class="text-[9px] text-center text-muted">Adayol güvencesiyle 256-bit SSL şifreleme ve anında sipariş onayı.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Favori Yan Panel -->
+  <div id="fav-panel" class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 transition-opacity hidden">
+    <div class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col">
+      <div class="p-4 border-b border-border flex items-center justify-between bg-ivory">
+        <h3 class="font-bold text-charcoal flex items-center gap-2">
+          ❤️ Favorileriniz
+        </h3>
+        <button onclick="toggleFavoritesPanel()" class="p-2 text-muted hover:text-charcoal font-bold text-lg">
+          ✕
+        </button>
+      </div>
+
+      <div id="fav-items" class="flex-1 overflow-y-auto p-4 space-y-3">
+        <p class="text-xs text-center text-muted py-8">Favorilerinizde henüz ürün bulunmuyor.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Real-time dynamic notification element -->
+  <div id="live-toast" class="fixed bottom-6 left-6 z-50 bg-charcoal text-white rounded-xl p-3 shadow-2xl border border-white/10 text-xs hidden items-center gap-3 max-w-sm toast-anim">
+    <div class="p-2 rounded bg-terracotta text-white font-bold text-sm shrink-0">🛒</div>
+    <div class="flex-1 min-w-0">
+      <p id="toast-title" class="font-bold text-terracotta-light">Anlık Alışveriş</p>
+      <p id="toast-desc" class="text-gray-300 truncate">Zeynep K. Lefkoşa'dan Sızma Zeytinyağı satın aldı!</p>
+    </div>
+    <button onclick="closeToast()" class="p-1 ml-auto text-gray-400 hover:text-white font-bold">✕</button>
+  </div>
+
+
+  <!-- JAVASCRIPT MASTER MOTOR -->
+  <script>
+    
+    // Product data setup with robust entries for different shelves
+    const FLASH_PRODUCTS = [
+      {
+        id: 1, title: "Soğuk Sıkım Sızma Zeytinyağı (1L)", category: "Kahve & Gurme", price: 340, oldPrice: 420,
+        store: "Zeytinlik Çiftliği", location: "Girne", rating: 4.9, reviews: 248, discount: 23,
+        image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=200&auto=format&fit=crop&q=80",
+        urgency: "Son 3 adet", saved: 182, deliveryToday: true, type: "today", activeCount: 23
+      },
+      {
+        id: 2, title: "Geleneksel Kıbrıs Hellimi (750g)", category: "Kahve & Gurme", price: 185, oldPrice: 220,
+        store: "Güzelyurt Mandıra", location: "Güzelyurt", rating: 5.0, reviews: 312, discount: 17,
+        image: "https://images.unsplash.com/photo-1552763443-1568205e337e?w=200&auto=format&fit=crop&q=80",
+        urgency: "Stok güncellendi", saved: 210, deliveryToday: true, type: "today", activeCount: 15
+      },
+      {
+        id: 3, title: "Taze Çekilmiş Türk Kahvesi (250g)", category: "Kahve & Gurme", price: 120, oldPrice: 150,
+        store: "Con Kahve", location: "Lefkoşa", rating: 4.9, reviews: 184, discount: 20,
+        image: "https://images.unsplash.com/photo-1517256064527-09c53b2d0bc6?w=200&auto=format&fit=crop&q=80",
+        urgency: "Hızlı tükeniyor", saved: 88, deliveryToday: true, type: "express", activeCount: 31
+      },
+      {
+        id: 4, title: "Yazlık Keten Elbise Unisex - Kırmızı", category: "Moda", price: 520, oldPrice: 690,
+        store: "Lefkoşa Butik", location: "Lefkoşa", rating: 4.7, reviews: 45, discount: 24,
+        image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=200&auto=format&fit=crop&q=80",
+        urgency: "Son 5 ürün", saved: 112, deliveryToday: false, type: "express", activeCount: 8
+      },
+      {
+        id: 5, title: "El Emeği Seramik Sunum Tabağı", category: "Seramik", price: 290, oldPrice: 380,
+        store: "Hasder Atölye", location: "Lefkoşa", rating: 4.8, reviews: 29, discount: 23,
+        image: "https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=200&auto=format&fit=crop&q=80",
+        urgency: "Stokta", saved: 64, deliveryToday: false, type: "local", activeCount: 12
+      },
+      {
+        id: 6, title: "Premium ANC Bluetooth Kulaklık", category: "Teknoloji", price: 1890, oldPrice: 2400,
+        store: "Ada Teknoloji", location: "Girne", rating: 4.9, reviews: 92, discount: 21,
+        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&auto=format&fit=crop&q=80",
+        urgency: "Bugün 11 satıldı", saved: 320, deliveryToday: true, type: "express", activeCount: 42
+      },
+      {
+        id: 7, title: "Kokulu El Yapımı Soya Mum", category: "Ev & Yaşam", price: 160, oldPrice: 210,
+        store: "Cozy Home", location: "Mağusa", rating: 4.6, reviews: 18, discount: 23,
+        image: "https://images.unsplash.com/photo-1603006905003-be475563bc59?w=200&auto=format&fit=crop&q=80",
+        urgency: "Son 2 adet", saved: 55, deliveryToday: true, type: "today", activeCount: 5
+      },
+      {
+        id: 8, title: "Doğal Organik Zeytinyağlı Sabun", category: "Organik", price: 65, oldPrice: 90,
+        store: "Lapta Doğal", location: "Girne", rating: 4.9, reviews: 104, discount: 27,
+        image: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=200&auto=format&fit=crop&q=80",
+        urgency: "Stok güncellendi", saved: 140, deliveryToday: true, type: "local", activeCount: 19
+      }
+    ];
+
+    const TREND_PRODUCTS = [
+      { id: 101, title: "Lavanta Yağı", category: "Kozmetik", price: 95, store: "Kozmetik Ada", location: "Girne", rating: 4.8, image: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=100&auto=format&fit=crop&q=80" },
+      { id: 102, title: "Badem Ezmesi", category: "Kahve & Gurme", price: 140, store: "Sütçüoğlu", location: "Lefkoşa", rating: 4.9, image: "https://images.unsplash.com/photo-1552763443-1568205e337e?w=100&auto=format&fit=crop&q=80" },
+      { id: 103, title: "Doğal Sabun", category: "Organik", price: 45, store: "Lapta Doğal", location: "Girne", rating: 4.7, image: "https://images.unsplash.com/photo-1546554137-f86b9593a222?w=100&auto=format&fit=crop&q=80" },
+      { id: 104, title: "Keten Gömlek", category: "Moda", price: 450, store: "Lefkoşa Butik", location: "Lefkoşa", rating: 4.6, image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=100&auto=format&fit=crop&q=80" },
+      { id: 105, title: "Kuru İncir", category: "Kahve & Gurme", price: 110, store: "Karpaz Doğal", location: "Karpaz", rating: 5.0, image: "https://images.unsplash.com/photo-1589113198533-468ac45084d5?w=100&auto=format&fit=crop&q=80" },
+      { id: 106, title: "Portakal Reçeli", category: "Kahve & Gurme", price: 85, store: "Güzelyurt Bahçe", location: "Güzelyurt", rating: 4.8, image: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=100&auto=format&fit=crop&q=80" },
+      { id: 107, title: "Çay Seti", category: "Ev & Yaşam", price: 650, store: "Hasder Atölye", location: "Lefkoşa", rating: 4.7, image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=100&auto=format&fit=crop&q=80" },
+      { id: 108, title: "Zeytin Sabunu", category: "Organik", price: 50, store: "Lapta Doğal", location: "Girne", rating: 4.9, image: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=100&auto=format&fit=crop&q=80" },
+      { id: 109, title: "Hasır Çanta", category: "Moda", price: 320, store: "Sesta Zanaat", location: "Mağusa", rating: 4.8, image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=100&auto=format&fit=crop&q=80" },
+      { id: 110, title: "Ada Balı", category: "Organik", price: 290, store: "Beşparmak Arı", location: "Karpaz", rating: 5.0, image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=100&auto=format&fit=crop&q=80" },
+      { id: 111, title: "Keten Pantolon", category: "Moda", price: 590, store: "Lefkoşa Butik", location: "Lefkoşa", rating: 4.5, image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=100&auto=format&fit=crop&q=80" },
+      { id: 112, title: "Seramik Kupa", category: "Seramik", price: 180, store: "Hasder Atölye", location: "Lefkoşa", rating: 4.9, image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=100&auto=format&fit=crop&q=80" }
+    ];
+
+    const TODAY_PRODUCTS = [
+      { id: 201, title: "Günlük Taze Çiftlik Yumurtası (30'lu)", location: "Girne", price: 140, store: "Doğa Çiftliği", image: "https://images.unsplash.com/photo-1516448620398-c5f44bf9f441?w=150&auto=format&fit=crop&q=80" },
+      { id: 202, title: "Köy Ekmeği Ekşi Mayalı", location: "Lefkoşa", price: 45, store: "Ekmek Atölyesi", image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=150&auto=format&fit=crop&q=80" },
+      { id: 203, title: "Taze Hellim Günlük Üretim", location: "Güzelyurt", price: 165, store: "Güzelyurt Mandıra", image: "https://images.unsplash.com/photo-1552763443-1568205e337e?w=150&auto=format&fit=crop&q=80" },
+      { id: 204, title: "Kıbrıs Çöreği Helvalı & Anasonlu", location: "Lefkoşa", price: 60, store: "Ekmek Atölyesi", image: "https://images.unsplash.com/photo-1517256064527-09c53b2d0bc6?w=150&auto=format&fit=crop&q=80" },
+      { id: 205, title: "Geleneksel Alıç Reçeli (400g)", location: "Girne", price: 95, store: "Zeytinlik Çiftliği", image: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=150&auto=format&fit=crop&q=80" },
+      { id: 206, title: "Karpaz Kekik Balı Doğal Süzme", location: "Karpaz", price: 340, store: "Karpaz Doğal", image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=150&auto=format&fit=crop&q=80" },
+      { id: 207, title: "Kurutulmuş Dağ Kekiği Demeti", location: "Girne", price: 40, store: "Lapta Doğal", image: "https://images.unsplash.com/photo-1540324155974-7265d7cf671f?w=150&auto=format&fit=crop&q=80" },
+      { id: 208, title: "Kıbrıs Nane Özü Saf Yağı", location: "Girne", price: 180, store: "Lapta Doğal", image: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=150&auto=format&fit=crop&q=80" },
+      { id: 209, title: "Harnup Pekmezi Katkısız", location: "Lefkoşa", price: 120, store: "Con Kahve", image: "https://images.unsplash.com/photo-1589113198533-468ac45084d5?w=150&auto=format&fit=crop&q=80" },
+      { id: 210, title: "Köy Kabak Çiçeği Taze", location: "Güzelyurt", price: 75, store: "Güzelyurt Bahçe", image: "https://images.unsplash.com/photo-1540324155974-7265d7cf671f?w=150&auto=format&fit=crop&q=80" },
+      { id: 211, title: "Kıbrıs Türk Kahvesi İkili", location: "Lefkoşa", price: 110, store: "Con Kahve", image: "https://images.unsplash.com/photo-1517256064527-09c53b2d0bc6?w=150&auto=format&fit=crop&q=80" },
+      { id: 212, title: "Ev Yapımı Limonata Özü", location: "Girne", price: 90, store: "Zeytinlik Çiftliği", image: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=150&auto=format&fit=crop&q=80" }
+    ];
+
+    // CENTRAL STATE
+    let cart = [];
+    let favorites = [];
+
+    // CATEGORY MENU CONFIG
+    const CATEGORIES = [
+      { name: "Tüm Kategoriler", icon: "☰" },
+      { name: "Ada’da Trend", icon: "🔥" },
+      { name: "Bugün Teslim", icon: "⚡" },
+      { name: "Yerel Üreticiler", icon: "🏺" },
+      { name: "Ev & Yaşam", icon: "🏠" },
+      { name: "Kozmetik", icon: "💄" },
+      { name: "Moda", icon: "👕" },
+      { name: "Elektronik", icon: "📱" },
+      { name: "Kahve & Gurme", icon: "☕" },
+      { name: "Organik", icon: "🌿" },
+      { name: "Hediyelik", icon: "🎁" },
+      { name: "Teknoloji", icon: "🎧" }
+    ];
+
+    // REAL TIME ACTIVITY TRANSACTIONS
+    const LIVE_TRANSACTIONS = [
+      { text: "🔴 CANLI Girne’de 18 kişi şu an alışveriş yapıyor!", type: "live" },
+      { text: "⚡ Lefkoşa Lojistik Merkezi aktif: Aynı gün kurye dağıtımı devam ediyor.", type: "logistics" },
+      { text: "🔥 Son 10 dakikada Karpaz Doğal Bal kategorisinde 14 adet sipariş paketlendi.", type: "sales" },
+      { text: "🟢 Gazimağusa'da 4 yeni yerel mağazamız bugün sisteme katıldı.", type: "stores" }
+    ];
+    let liveTxIndex = 0;
+
+    // LOAD TRIGGER
+    window.onload = function() {
+      renderCategoryMenu();
+      renderAllShelves();
+      initCountdown();
+      initLiveActivity();
+      initSearchEngine();
+      initDynamicCounters();
+    };
+
+    function renderCategoryMenu() {
+      const container = document.getElementById("categories-container");
+      container.innerHTML = "";
+      
+      CATEGORIES.forEach((cat, index) => {
+        const isFirst = index === 0;
+        const button = document.createElement("button");
+        button.className = `px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-150 border border-border flex items-center gap-1.5 ${
+          isFirst 
+            ? "bg-terracotta text-white border-terracotta" 
+            : "bg-white text-charcoal hover:border-terracotta hover:text-terracotta"
+        }`;
+        button.innerHTML = `<span>${cat.icon}</span> <span>${cat.name}</span>`;
+        button.onclick = () => selectCategory(button, cat.name);
+        container.appendChild(button);
+      });
+    }
+
+    function selectCategory(activeBtn, catName) {
+      const buttons = document.querySelectorAll("#categories-container button");
+      buttons.forEach(btn => {
+        btn.className = "px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-150 border border-border bg-white text-charcoal hover:border-terracotta hover:text-terracotta flex items-center gap-1.5";
+      });
+      activeBtn.className = "px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-150 border border-terracotta bg-terracotta text-white flex items-center gap-1.5";
+
+      if (catName === "Tüm Kategoriler") {
+        renderAllShelves();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      // Jump filter simulations
+      if (catName === "Ada’da Trend") {
+        document.getElementById("trend-sales-anchor").scrollIntoView({ behavior: 'smooth' });
+      } else if (catName === "Bugün Teslim") {
+        document.getElementById("today-delivery-anchor").scrollIntoView({ behavior: 'smooth' });
+      } else if (catName === "Yerel Üreticiler") {
+        document.getElementById("flash-sales-anchor").scrollIntoView({ behavior: 'smooth' });
+      } else {
+        // Direct content inline filtering simulation
+        const filteredFlash = FLASH_PRODUCTS.filter(p => p.category === catName);
+        const filteredTrend = TREND_PRODUCTS.filter(p => p.category === catName);
+        
+        renderFilteredFlash(filteredFlash);
+        renderFilteredTrend(filteredTrend);
+      }
+    }
+
+    function renderAllShelves() {
+      renderFilteredFlash(FLASH_PRODUCTS);
+      renderFilteredTrend(TREND_PRODUCTS);
+      renderFilteredToday(TODAY_PRODUCTS);
+    }
+
+    // Dynamic Flash product card rendering
+    function createFlashProductCard(product) {
+      const isFav = favorites.includes(product.id);
+      const deliveryBadge = product.deliveryToday 
+        ? `<span class="bg-olive/15 text-olive px-2 py-0.5 rounded text-[10px] font-extrabold flex items-center gap-0.5">🟢 Bugün Teslim</span>`
+        : `<span class="bg-blue/15 text-blue px-2 py-0.5 rounded text-[10px] font-extrabold flex items-center gap-0.5">🚚 Ada Express</span>`;
+
+      return `
+        <div class="product-card bg-white border border-[#EFE3DA] rounded-xl overflow-hidden flex flex-col justify-between relative h-full">
+          <!-- Image block -->
+          <div class="relative aspect-square w-full bg-ivory overflow-hidden">
+            <img class="w-full h-full object-cover" src="${product.image}" alt="${product.title}" onerror="this.src='https://placehold.co/200x200/FAF7F3/E96B3C?text=${product.title}'">
+            
+            <!-- Left upper discount -->
+            <span class="absolute top-2 left-2 bg-terracotta text-white text-[10px] px-1.5 py-0.5 rounded font-black shadow-sm">%${product.discount} İNDİRİM</span>
+            
+            <!-- Right upper Heart icon -->
+            <button onclick="toggleFavorite(${product.id})" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/95 hover:bg-white flex items-center justify-center shadow-xs text-terracotta hover:scale-110 active:scale-95 transition-transform">
+              <svg class="w-4 h-4" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Product meta -->
+          <div class="p-2.5 flex-1 flex flex-col justify-between space-y-2">
+            <div class="space-y-1">
+              <!-- Store identification -->
+              <div class="flex items-center justify-between text-[9px] text-muted font-bold uppercase tracking-wider">
+                <span class="hover:underline cursor-pointer truncate">${product.store}</span>
+                <span class="shrink-0 text-amber">★ ${product.rating} (${product.reviews})</span>
+              </div>
+              
+              <!-- Slashed title max 2 lines -->
+              <h3 class="text-[11px] text-charcoal font-bold line-clamp-2 min-h-[30px] leading-snug">
+                ${product.title}
+              </h3>
+            </div>
+
+            <!-- Social proof live labels -->
+            <div class="bg-terracotta-light/50 border border-terracotta/10 rounded px-1.5 py-0.5 text-[9px] flex items-center justify-between text-charcoal font-bold">
+              <span class="text-terracotta flex items-center gap-0.5">
+                <span class="w-1 h-1 bg-terracotta rounded-full pulse-dot"></span>
+                <span>${product.activeCount} kişi bakıyor</span>
+              </span>
+              <span class="text-muted">${product.urgency}</span>
+            </div>
+
+            <!-- Price and quick checkout button -->
+            <div class="space-y-1.5 pt-1.5 border-t border-border/60">
+              <div class="flex items-baseline justify-between">
+                <div class="flex items-baseline gap-1">
+                  <span class="text-xs font-black text-terracotta">₺${product.price}</span>
+                  <span class="text-[9px] text-muted line-through">₺${product.oldPrice}</span>
+                </div>
+                <span class="text-[9px] text-muted font-bold">📍 ${product.location}</span>
+              </div>
+
+              <div class="flex items-center justify-between gap-1">
+                ${deliveryBadge}
+                <!-- Orange outline basket button -->
+                <button onclick="addToCart(${product.id})" class="border border-terracotta text-terracotta hover:bg-terracotta hover:text-white p-1 rounded transition-colors" title="Sepete Ekle">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Dynamic Trend product card rendering (smaller micro cards)
+    function createTrendProductCard(product) {
+      return `
+        <div class="product-card bg-white border border-[#EFE3DA] rounded-lg overflow-hidden flex flex-col justify-between p-1.5">
+          <div class="relative aspect-square w-full bg-ivory rounded overflow-hidden">
+            <img class="w-full h-full object-cover" src="${product.image}" alt="${product.title}" onerror="this.src='https://placehold.co/100x100/FAF7F3/E96B3C?text=${product.title}'">
+          </div>
+          <div class="mt-1 space-y-0.5">
+            <h4 class="text-[10px] text-charcoal font-bold truncate leading-tight">${product.title}</h4>
+            <p class="text-[8px] text-muted truncate">${product.store}</p>
+            <div class="flex items-center justify-between text-[10px] font-black text-terracotta pt-0.5">
+              <span>₺${product.price}</span>
+              <span class="text-amber text-[8px]">★ ${product.rating}</span>
+            </div>
+          </div>
+          <button onclick="addGenericToCart('${product.title}', ${product.price}, '${product.store}', '${product.image}')" class="w-full mt-1.5 bg-terracotta-light hover:bg-terracotta hover:text-white text-terracotta text-[9px] py-1 rounded font-bold transition-colors">
+            Ekle
+          </button>
+        </div>
+      `;
+    }
+
+    // Dynamic Today product card rendering
+    function createTodayProductCard(product) {
+      return `
+        <div class="product-card bg-white border border-[#EFE3DA] rounded-lg p-2 shrink-0 w-[125px] flex flex-col justify-between">
+          <div class="relative aspect-square w-full bg-ivory rounded overflow-hidden">
+            <img class="w-full h-full object-cover" src="${product.image}" alt="${product.title}" onerror="this.src='https://placehold.co/150x150/FAF7F3/E96B3C?text=${product.title}'">
+            <span class="absolute top-1 left-1 bg-olive text-white text-[8px] px-1 rounded font-black">BUGÜN TESLİM</span>
+          </div>
+          <div class="mt-1.5 space-y-1">
+            <h4 class="text-[10px] text-charcoal font-bold line-clamp-2 leading-tight min-h-[24px]">${product.title}</h4>
+            <div class="flex items-center justify-between text-[10px] font-extrabold text-charcoal">
+              <span class="text-terracotta">₺${product.price}</span>
+              <span class="text-muted text-[8px]">📍 ${product.location}</span>
+            </div>
+          </div>
+          <button onclick="addGenericToCart('${product.title}', ${product.price}, '${product.store}', '${product.image}')" class="w-full mt-1.5 border border-terracotta hover:bg-terracotta hover:text-white text-terracotta text-[9px] py-1 rounded font-bold transition-colors flex items-center justify-center gap-1">
+            <span>Sepete Ekle</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function renderFilteredFlash(items) {
+      const container = document.getElementById("flash-grid");
+      if (items.length > 0) {
+        container.innerHTML = items.map(p => createFlashProductCard(p)).join('');
+        container.parentElement.classList.remove("hidden");
+      } else {
+        container.innerHTML = `<p class="text-xs text-muted col-span-full py-6 text-center">Eşleşen flash ürünü bulunamadı.</p>`;
+      }
+    }
+
+    function renderFilteredTrend(items) {
+      const container = document.getElementById("trend-grid");
+      if (items.length > 0) {
+        container.innerHTML = items.map(p => createTrendProductCard(p)).join('');
+        container.parentElement.classList.remove("hidden");
+      } else {
+        container.innerHTML = `<p class="text-xs text-muted col-span-full py-6 text-center">Eşleşen trend ürünü bulunamadı.</p>`;
+      }
+    }
+
+    function renderFilteredToday(items) {
+      const container = document.getElementById("today-carousel");
+      if (items.length > 0) {
+        container.innerHTML = items.map(p => createTodayProductCard(p)).join('');
+      } else {
+        container.innerHTML = `<p class="text-xs text-muted py-6">Bu bölgede teslim edilebilir ürün bulunamadı.</p>`;
+      }
+    }
+
+    function filterLocationProducts(loc) {
+      if (loc === "Tümü") {
+        renderFilteredToday(TODAY_PRODUCTS);
+      } else {
+        const filtered = TODAY_PRODUCTS.filter(p => p.location === loc);
+        renderFilteredToday(filtered);
+      }
+      toastMessage(`${loc} konumuna uygun teslimat ürünleri listelendi.`);
+    }
+
+    // SEARCH FILTER ENGINE
+    function initSearchEngine() {
+      const input = document.getElementById("search-input");
+      const clearBtn = document.getElementById("clear-search");
+      const searchBtn = document.getElementById("search-btn");
+
+      const handleSearch = () => {
+        const query = input.value.trim().toLowerCase();
+        if (query.length > 0) {
+          clearBtn.classList.remove("hidden");
+          const filteredFlash = FLASH_PRODUCTS.filter(p => 
+            p.title.toLowerCase().includes(query) || 
+            p.category.toLowerCase().includes(query) ||
+            p.store.toLowerCase().includes(query) ||
+            p.location.toLowerCase().includes(query)
+          );
+          const filteredTrend = TREND_PRODUCTS.filter(p => 
+            p.title.toLowerCase().includes(query) || 
+            p.category.toLowerCase().includes(query) ||
+            p.store.toLowerCase().includes(query) ||
+            p.location.toLowerCase().includes(query)
+          );
+          renderFilteredFlash(filteredFlash);
+          renderFilteredTrend(filteredTrend);
+        } else {
+          clearBtn.classList.add("hidden");
+          renderAllShelves();
+        }
+      };
+
+      input.addEventListener("input", handleSearch);
+      searchBtn.addEventListener("click", handleSearch);
+
+      clearBtn.addEventListener("click", () => {
+        input.value = "";
+        clearBtn.classList.add("hidden");
+        renderAllShelves();
+      });
+    }
+
+    
+    // Basket Actions
+    function addToCart(id) {
+      const product = FLASH_PRODUCTS.find(p => p.id === id);
+      if (!product) return;
+
+      const existing = cart.find(item => item.id === id);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({ ...product, quantity: 1 });
+      }
+
+      updateCartUI();
+      toastMessage(`"${product.title.substring(0, 20)}..." sepetinize eklendi!`);
+    }
+
+    function addGenericToCart(title, price, store, image) {
+      const uniqueId = Math.floor(Math.random() * 100000);
+      const item = {
+        id: uniqueId,
+        title: title,
+        price: price,
+        store: store,
+        image: image,
+        quantity: 1
+      };
+      cart.push(item);
+      updateCartUI();
+      toastMessage(`"${title}" sepetinize eklendi!`);
+    }
+
+    function updateCartUI() {
+      const counter = document.getElementById("cart-counter");
+      const itemsContainer = document.getElementById("cart-items");
+      const totalContainer = document.getElementById("cart-total-price");
+
+      const totalQuantity = cart.reduce((acc, curr) => acc + curr.quantity, 0);
+      counter.innerText = totalQuantity;
+
+      if (cart.length === 0) {
+        itemsContainer.innerHTML = `<p class="text-xs text-center text-muted py-8">Sepetinizde ürün bulunmamaktadır.</p>`;
+        totalContainer.innerText = "₺0.00";
+        return;
+      }
+
+      itemsContainer.innerHTML = cart.map(item => `
+        <div class="flex items-center gap-2.5 bg-ivory p-2 rounded border border-border">
+          <img src="${item.image}" alt="${item.title}" class="w-10 h-10 rounded object-cover">
+          <div class="flex-1 min-w-0">
+            <h4 class="text-[11px] font-bold text-charcoal truncate">${item.title}</h4>
+            <p class="text-[9px] text-muted">${item.store}</p>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span class="text-xs font-bold text-terracotta">₺${item.price}</span>
+              <span class="text-[10px] text-muted">Miktar: ${item.quantity}</span>
+            </div>
+          </div>
+          <button onclick="removeFromCart(${item.id})" class="text-muted hover:text-red-500 font-bold px-1.5 text-xs">✕</button>
+        </div>
+      `).join('');
+
+      const totalPrice = cart.reduce((acc, curr) => acc + (curr.price * curr.quantity), 0);
+      totalContainer.innerText = `₺${totalPrice.toLocaleString()}`;
+    }
+
+    function removeFromCart(id) {
+      cart = cart.filter(item => item.id !== id);
+      updateCartUI();
+    }
+
+    function toggleCartPanel() {
+      const panel = document.getElementById("cart-panel");
+      panel.classList.toggle("hidden");
+    }
+
+    function checkoutMock() {
+      if (cart.length === 0) {
+        toastMessage("Lütfen sepetinize önce ürün ekleyin.");
+        return;
+      }
+      toastMessage("Ödeme sayfasına yönlendiriliyorsunuz... Siparişiniz en kısa sürede kapınızda olacak!");
+      cart = [];
+      updateCartUI();
+      setTimeout(() => { toggleCartPanel(); }, 1500);
+    }
+
+    
+    // Favorites Actions
+    function toggleFavorite(id) {
+      const index = favorites.indexOf(id);
+      if (index > -1) {
+        favorites.splice(index, 1);
+        toastMessage("Ürün beğenilenlerden kaldırıldı.");
+      } else {
+        favorites.push(id);
+        toastMessage("Ürün favorilerinize başarıyla kaydedildi! ❤️");
+      }
+      updateFavoritesUI();
+      renderFilteredFlash(FLASH_PRODUCTS); // Force-update hearts
+    }
+
+    function updateFavoritesUI() {
+      const counter = document.getElementById("fav-counter");
+      const container = document.getElementById("fav-items");
+
+      counter.innerText = favorites.length;
+
+      if (favorites.length === 0) {
+        container.innerHTML = `<p class="text-xs text-center text-muted py-8">Favorileriniz boş.</p>`;
+        return;
+      }
+
+      const favProducts = FLASH_PRODUCTS.filter(p => favorites.includes(p.id));
+      container.innerHTML = favProducts.map(item => `
+        <div class="flex items-center gap-2.5 bg-ivory p-2 rounded border border-border">
+          <img src="${item.image}" alt="${item.title}" class="w-10 h-10 rounded object-cover">
+          <div class="flex-1 min-w-0">
+            <h4 class="text-[11px] font-bold text-charcoal truncate">${item.title}</h4>
+            <p class="text-[9px] text-muted">${item.store}</p>
+            <span class="text-xs font-bold text-terracotta">₺${item.price}</span>
+          </div>
+          <button onclick="toggleFavorite(${item.id})" class="text-terracotta hover:scale-110 px-1.5 text-xs">❤️</button>
+        </div>
+      `).join('');
+    }
+
+    function toggleFavoritesPanel() {
+      const panel = document.getElementById("fav-panel");
+      panel.classList.toggle("hidden");
+    }
+
+    
+    // Countdown Timer for Flash shelf
+    function initCountdown() {
+      const timerEl = document.getElementById("countdown-timer");
+      let hours = 2, minutes = 43, seconds = 18;
+
+      setInterval(() => {
+        seconds--;
+        if (seconds < 0) {
+          seconds = 59;
+          minutes--;
+          if (minutes < 0) {
+            minutes = 59;
+            hours--;
+            if (hours < 0) {
+              hours = 3; minutes = 0; seconds = 0;
+            }
+          }
+        }
+        const hStr = hours < 10 ? '0' + hours : hours;
+        const mStr = minutes < 10 ? '0' + minutes : minutes;
+        const sStr = seconds < 10 ? '0' + seconds : seconds;
+        timerEl.innerText = `⏱ ${hStr}:${mStr}:${sStr}`;
+      }, 1000);
+    }
+
+    
+    // Live Ticker Actions
+    function initLiveActivity() {
+      // Top line ticker loop
+      setInterval(() => {
+        const textEl = document.getElementById("live-activity-text");
+        const container = document.getElementById("live-carousel-container");
+        
+        container.style.opacity = "0";
+        setTimeout(() => {
+          liveTxIndex = (liveTxIndex + 1) % LIVE_TRANSACTIONS.length;
+          textEl.innerText = LIVE_TRANSACTIONS[liveTxIndex].text;
+          container.style.opacity = "1";
+        }, 300);
+
+      }, 7000);
+
+      // Compact dynamic info card ticker loop
+      setInterval(() => {
+        const locations = ["Girne", "Lefkoşa", "Gazimağusa", "Güzelyurt", "Karpaz"];
+        const products = ["Sızma Zeytinyağı", "Taze Kıbrıs Hellimi", "Con Türk Kahvesi", "El Emeği Seramik Kupa", "Karpaz Süzme Balı"];
+        const times = ["Az önce", "1 dk önce", "2 dk önce", "3 dk önce"];
+
+        const randomLoc = locations[Math.floor(Math.random() * locations.length)];
+        const randomProduct = products[Math.floor(Math.random() * products.length)];
+        const randomTime = times[Math.floor(Math.random() * times.length)];
+
+        document.getElementById("live-purchase-card-text").innerText = `Az önce ${randomLoc}'den ${randomProduct} sipariş edildi`;
+        document.getElementById("live-purchase-card-time").innerText = randomTime;
+
+        // Optionally fire a bottom toast too
+        triggerNotificationToast(randomLoc, randomProduct);
+      }, 11000);
+    }
+
+    function triggerNotificationToast(location, product) {
+      const names = ["Ayla K.", "Mustafa S.", "Ceren Y.", "Kemal B.", "Aylin H."];
+      const randomName = names[Math.floor(Math.random() * names.length)];
+      
+      const toast = document.getElementById("live-toast");
+      const desc = document.getElementById("toast-desc");
+      const title = document.getElementById("toast-title");
+
+      title.innerHTML = `🛒 Canlı Alışveriş • <span class="text-emerald-400">Yeni Sipariş</span>`;
+      desc.innerText = `${randomName} (${location}), "${product}" satın aldı!`;
+      
+      toast.classList.remove("hidden");
+
+      setTimeout(() => {
+        closeToast();
+      }, 4000);
+    }
+
+    function toastMessage(msg) {
+      const toast = document.getElementById("live-toast");
+      const desc = document.getElementById("toast-desc");
+      const title = document.getElementById("toast-title");
+
+      title.innerText = "İşlem Bildirimi";
+      desc.innerText = msg;
+      
+      toast.classList.remove("hidden");
+
+      setTimeout(() => {
+        closeToast();
+      }, 4000);
+    }
+
+    function closeToast() {
+      document.getElementById("live-toast").classList.add("hidden");
+    }
+
+    function scrollContainer(id, direction) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollBy({ left: 150 * direction, behavior: 'smooth' });
+      }
+    }
+
+    // Dynamic numeric counters shifting realistically
+    function initDynamicCounters() {
+      setInterval(() => {
+        const activeStores = document.getElementById("active-stores-count");
+        const deliveredOrders = document.getElementById("live-delivered-orders");
+        
+        const storeShift = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
+        let valStores = parseInt(activeStores.innerText) + storeShift;
+        if (valStores < 32) valStores = 32;
+        if (valStores > 45) valStores = 45;
+        activeStores.innerText = valStores;
+
+        const orderShift = Math.floor(Math.random() * 2) + 1; // +1 or +2
+        deliveredOrders.innerText = parseInt(deliveredOrders.innerText) + orderShift;
+      }, 8000);
+    }
+  </script>
+</body>
+</html>
